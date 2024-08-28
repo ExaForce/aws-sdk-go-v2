@@ -2951,10 +2951,48 @@
                     "traits": {
                         "smithy.api#documentation": "<p>Metadata information for a user.</p>"
                     }
+                },
+                "UserAttributes": {
+                    "target": "com.amazonaws.identitystoreinternal#UserAttributes",
+                    "traits": {
+                        "smithy.api#documentation": "<p>Attributes of a user.</p>"
+                    }
                 }
             },
             "traits": {
                 "smithy.api#documentation": "<p>A user object that contains the metadata and attributes for a specified user.</p>"
+            }
+        },
+        "com.amazonaws.identitystoreinternal#UserAttributes": {
+            "type": "map",
+            "key": {
+                "target": "com.amazonaws.identitystoreinternal#String"
+            },
+            "value": {
+                "target": "com.amazonaws.identitystoreinternal#UserAttributesValue"
+            }
+        },
+        "com.amazonaws.identitystoreinternal#UserAttributesComplexListValue": {
+            "type": "list",
+            "member": {
+                "target": "com.amazonaws.identitystoreinternal#UserAttributes"
+            }
+        },
+        "com.amazonaws.identitystoreinternal#UserAttributesValue": {
+            "type": "union",
+            "members": {
+                "StringValue": {
+                    "target": "com.amazonaws.identitystoreinternal#SensitiveStringType"
+                },
+                "BooleanValue": {
+                    "target": "com.amazonaws.identitystoreinternal#SensitiveBooleanType"
+                },
+                "ComplexValue": {
+                    "target": "com.amazonaws.identitystoreinternal#UserAttributes"
+                },
+                "ComplexListValue": {
+                    "target": "com.amazonaws.identitystoreinternal#UserAttributesComplexListValue"
+                }
             }
         },
         "com.amazonaws.identitystoreinternal#UserName": {
