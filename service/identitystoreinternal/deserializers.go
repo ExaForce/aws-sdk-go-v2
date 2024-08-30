@@ -598,6 +598,11 @@ func awsAwsjson11_deserializeDocumentUser(v **types.User, value interface{}) err
 				return err
 			}
 
+		case "UserAttributes":
+			if err := awsAwsjson11_deserializeDocumentUserAttributes(&sv.UserAttributes, value); err != nil {
+				return err
+			}
+
 		case "UserId":
 			if value != nil {
 				jtv, ok := value.(string)
@@ -622,6 +627,142 @@ func awsAwsjson11_deserializeDocumentUser(v **types.User, value interface{}) err
 		}
 	}
 	*v = sv
+	return nil
+}
+
+func awsAwsjson11_deserializeDocumentUserAttributes(v *map[string]types.UserAttributesValue, value interface{}) error {
+	if v == nil {
+		return fmt.Errorf("unexpected nil of type %T", v)
+	}
+	if value == nil {
+		return nil
+	}
+
+	shape, ok := value.(map[string]interface{})
+	if !ok {
+		return fmt.Errorf("unexpected JSON type %v", value)
+	}
+
+	var mv map[string]types.UserAttributesValue
+	if *v == nil {
+		mv = map[string]types.UserAttributesValue{}
+	} else {
+		mv = *v
+	}
+
+	for key, value := range shape {
+		var parsedVal types.UserAttributesValue
+		mapVar := parsedVal
+		if err := awsAwsjson11_deserializeDocumentUserAttributesValue(&mapVar, value); err != nil {
+			return err
+		}
+		parsedVal = mapVar
+		mv[key] = parsedVal
+
+	}
+	*v = mv
+	return nil
+}
+
+func awsAwsjson11_deserializeDocumentUserAttributesComplexListValue(v *[]map[string]types.UserAttributesValue, value interface{}) error {
+	if v == nil {
+		return fmt.Errorf("unexpected nil of type %T", v)
+	}
+	if value == nil {
+		return nil
+	}
+
+	shape, ok := value.([]interface{})
+	if !ok {
+		return fmt.Errorf("unexpected JSON type %v", value)
+	}
+
+	var cv []map[string]types.UserAttributesValue
+	if *v == nil {
+		cv = []map[string]types.UserAttributesValue{}
+	} else {
+		cv = *v
+	}
+
+	for _, value := range shape {
+		var col map[string]types.UserAttributesValue
+		if err := awsAwsjson11_deserializeDocumentUserAttributes(&col, value); err != nil {
+			return err
+		}
+		cv = append(cv, col)
+
+	}
+	*v = cv
+	return nil
+}
+
+func awsAwsjson11_deserializeDocumentUserAttributesValue(v *types.UserAttributesValue, value interface{}) error {
+	if v == nil {
+		return fmt.Errorf("unexpected nil of type %T", v)
+	}
+	if value == nil {
+		return nil
+	}
+
+	shape, ok := value.(map[string]interface{})
+	if !ok {
+		return fmt.Errorf("unexpected JSON type %v", value)
+	}
+
+	var uv types.UserAttributesValue
+loop:
+	for key, value := range shape {
+		if value == nil {
+			continue
+		}
+		switch key {
+		case "BooleanValue":
+			var mv bool
+			if value != nil {
+				jtv, ok := value.(bool)
+				if !ok {
+					return fmt.Errorf("expected SensitiveBooleanType to be of type *bool, got %T instead", value)
+				}
+				mv = jtv
+			}
+			uv = &types.UserAttributesValueMemberBooleanValue{Value: mv}
+			break loop
+
+		case "ComplexListValue":
+			var mv []map[string]types.UserAttributesValue
+			if err := awsAwsjson11_deserializeDocumentUserAttributesComplexListValue(&mv, value); err != nil {
+				return err
+			}
+			uv = &types.UserAttributesValueMemberComplexListValue{Value: mv}
+			break loop
+
+		case "ComplexValue":
+			var mv map[string]types.UserAttributesValue
+			if err := awsAwsjson11_deserializeDocumentUserAttributes(&mv, value); err != nil {
+				return err
+			}
+			uv = &types.UserAttributesValueMemberComplexValue{Value: mv}
+			break loop
+
+		case "StringValue":
+			var mv string
+			if value != nil {
+				jtv, ok := value.(string)
+				if !ok {
+					return fmt.Errorf("expected SensitiveStringType to be of type string, got %T instead", value)
+				}
+				mv = jtv
+			}
+			uv = &types.UserAttributesValueMemberStringValue{Value: mv}
+			break loop
+
+		default:
+			uv = &types.UnknownUnionMember{Tag: key}
+			break loop
+
+		}
+	}
+	*v = uv
 	return nil
 }
 

@@ -41,6 +41,9 @@ type User struct {
 	// Metadata information for a user.
 	Meta *UserInfo
 
+	// Attributes of a user.
+	UserAttributes map[string]UserAttributesValue
+
 	// A unique string used to identify the user. The length limit is 128 characters.
 	// This value can consist of letters, accented characters, symbols, numbers, and
 	// punctuation. This value is specified at the time the user is created and stored
@@ -49,6 +52,48 @@ type User struct {
 
 	noSmithyDocumentSerde
 }
+
+// The following types satisfy this interface:
+//
+//	UserAttributesValueMemberBooleanValue
+//	UserAttributesValueMemberComplexListValue
+//	UserAttributesValueMemberComplexValue
+//	UserAttributesValueMemberStringValue
+type UserAttributesValue interface {
+	isUserAttributesValue()
+}
+
+type UserAttributesValueMemberBooleanValue struct {
+	Value bool
+
+	noSmithyDocumentSerde
+}
+
+func (*UserAttributesValueMemberBooleanValue) isUserAttributesValue() {}
+
+type UserAttributesValueMemberComplexListValue struct {
+	Value []map[string]UserAttributesValue
+
+	noSmithyDocumentSerde
+}
+
+func (*UserAttributesValueMemberComplexListValue) isUserAttributesValue() {}
+
+type UserAttributesValueMemberComplexValue struct {
+	Value map[string]UserAttributesValue
+
+	noSmithyDocumentSerde
+}
+
+func (*UserAttributesValueMemberComplexValue) isUserAttributesValue() {}
+
+type UserAttributesValueMemberStringValue struct {
+	Value string
+
+	noSmithyDocumentSerde
+}
+
+func (*UserAttributesValueMemberStringValue) isUserAttributesValue() {}
 
 // Metadata information about a user.
 type UserInfo struct {
@@ -69,3 +114,14 @@ type UserInfo struct {
 }
 
 type noSmithyDocumentSerde = smithydocument.NoSerde
+
+// UnknownUnionMember is returned when a union member is returned over the wire,
+// but has an unknown tag.
+type UnknownUnionMember struct {
+	Tag   string
+	Value []byte
+
+	noSmithyDocumentSerde
+}
+
+func (*UnknownUnionMember) isUserAttributesValue() {}
