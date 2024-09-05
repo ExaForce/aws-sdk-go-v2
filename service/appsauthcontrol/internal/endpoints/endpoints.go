@@ -62,7 +62,7 @@ func transformToSharedOptions(options Options) endpoints.Options {
 	}
 }
 
-// Resolver identitystoreinternal endpoint resolver
+// Resolver Apps Auth Control endpoint resolver
 type Resolver struct {
 	partitions endpoints.Partitions
 }
@@ -110,28 +110,28 @@ var defaultPartitions = endpoints.Partitions{
 			{
 				Variant: endpoints.DualStackVariant,
 			}: {
-				Hostname:          "identitystoreinternal.{region}.api.aws",
+				Hostname:          "appsauth.{region}.api.aws",
 				Protocols:         []string{"https"},
 				SignatureVersions: []string{"v4"},
 			},
 			{
 				Variant: endpoints.FIPSVariant,
 			}: {
-				Hostname:          "identitystoreinternal-fips.{region}.amazonaws.com",
+				Hostname:          "appsauth-fips.{region}.amazonaws.com",
 				Protocols:         []string{"https"},
 				SignatureVersions: []string{"v4"},
 			},
 			{
 				Variant: endpoints.FIPSVariant | endpoints.DualStackVariant,
 			}: {
-				Hostname:          "identitystoreinternal-fips.{region}.api.aws",
+				Hostname:          "appsauth-fips.{region}.api.aws",
 				Protocols:         []string{"https"},
 				SignatureVersions: []string{"v4"},
 			},
 			{
 				Variant: 0,
 			}: {
-				Hostname:          "identitystoreinternal.{region}.amazonaws.com",
+				Hostname:          "appsauth.{region}.amazonaws.com",
 				Protocols:         []string{"https"},
 				SignatureVersions: []string{"v4"},
 			},
@@ -145,28 +145,28 @@ var defaultPartitions = endpoints.Partitions{
 			{
 				Variant: endpoints.DualStackVariant,
 			}: {
-				Hostname:          "identitystoreinternal.{region}.api.amazonwebservices.com.cn",
+				Hostname:          "appsauth.{region}.api.amazonwebservices.com.cn",
 				Protocols:         []string{"https"},
 				SignatureVersions: []string{"v4"},
 			},
 			{
 				Variant: endpoints.FIPSVariant,
 			}: {
-				Hostname:          "identitystoreinternal-fips.{region}.amazonaws.com.cn",
+				Hostname:          "appsauth-fips.{region}.amazonaws.com.cn",
 				Protocols:         []string{"https"},
 				SignatureVersions: []string{"v4"},
 			},
 			{
 				Variant: endpoints.FIPSVariant | endpoints.DualStackVariant,
 			}: {
-				Hostname:          "identitystoreinternal-fips.{region}.api.amazonwebservices.com.cn",
+				Hostname:          "appsauth-fips.{region}.api.amazonwebservices.com.cn",
 				Protocols:         []string{"https"},
 				SignatureVersions: []string{"v4"},
 			},
 			{
 				Variant: 0,
 			}: {
-				Hostname:          "identitystoreinternal.{region}.amazonaws.com.cn",
+				Hostname:          "appsauth.{region}.amazonaws.com.cn",
 				Protocols:         []string{"https"},
 				SignatureVersions: []string{"v4"},
 			},
@@ -180,14 +180,14 @@ var defaultPartitions = endpoints.Partitions{
 			{
 				Variant: endpoints.FIPSVariant,
 			}: {
-				Hostname:          "identitystoreinternal-fips.{region}.c2s.ic.gov",
+				Hostname:          "appsauth-fips.{region}.c2s.ic.gov",
 				Protocols:         []string{"https"},
 				SignatureVersions: []string{"v4"},
 			},
 			{
 				Variant: 0,
 			}: {
-				Hostname:          "identitystoreinternal.{region}.c2s.ic.gov",
+				Hostname:          "appsauth.{region}.c2s.ic.gov",
 				Protocols:         []string{"https"},
 				SignatureVersions: []string{"v4"},
 			},
@@ -201,14 +201,14 @@ var defaultPartitions = endpoints.Partitions{
 			{
 				Variant: endpoints.FIPSVariant,
 			}: {
-				Hostname:          "identitystoreinternal-fips.{region}.sc2s.sgov.gov",
+				Hostname:          "appsauth-fips.{region}.sc2s.sgov.gov",
 				Protocols:         []string{"https"},
 				SignatureVersions: []string{"v4"},
 			},
 			{
 				Variant: 0,
 			}: {
-				Hostname:          "identitystoreinternal.{region}.sc2s.sgov.gov",
+				Hostname:          "appsauth.{region}.sc2s.sgov.gov",
 				Protocols:         []string{"https"},
 				SignatureVersions: []string{"v4"},
 			},
@@ -222,14 +222,14 @@ var defaultPartitions = endpoints.Partitions{
 			{
 				Variant: endpoints.FIPSVariant,
 			}: {
-				Hostname:          "identitystoreinternal-fips.{region}.cloud.adc-e.uk",
+				Hostname:          "appsauth-fips.{region}.cloud.adc-e.uk",
 				Protocols:         []string{"https"},
 				SignatureVersions: []string{"v4"},
 			},
 			{
 				Variant: 0,
 			}: {
-				Hostname:          "identitystoreinternal.{region}.cloud.adc-e.uk",
+				Hostname:          "appsauth.{region}.cloud.adc-e.uk",
 				Protocols:         []string{"https"},
 				SignatureVersions: []string{"v4"},
 			},
@@ -243,14 +243,14 @@ var defaultPartitions = endpoints.Partitions{
 			{
 				Variant: endpoints.FIPSVariant,
 			}: {
-				Hostname:          "identitystoreinternal-fips.{region}.csp.hci.ic.gov",
+				Hostname:          "appsauth-fips.{region}.csp.hci.ic.gov",
 				Protocols:         []string{"https"},
 				SignatureVersions: []string{"v4"},
 			},
 			{
 				Variant: 0,
 			}: {
-				Hostname:          "identitystoreinternal.{region}.csp.hci.ic.gov",
+				Hostname:          "appsauth.{region}.csp.hci.ic.gov",
 				Protocols:         []string{"https"},
 				SignatureVersions: []string{"v4"},
 			},
@@ -264,28 +264,28 @@ var defaultPartitions = endpoints.Partitions{
 			{
 				Variant: endpoints.DualStackVariant,
 			}: {
-				Hostname:          "identitystoreinternal.{region}.api.aws",
+				Hostname:          "appsauth.{region}.api.aws",
 				Protocols:         []string{"https"},
 				SignatureVersions: []string{"v4"},
 			},
 			{
 				Variant: endpoints.FIPSVariant,
 			}: {
-				Hostname:          "identitystoreinternal-fips.{region}.amazonaws.com",
+				Hostname:          "appsauth-fips.{region}.amazonaws.com",
 				Protocols:         []string{"https"},
 				SignatureVersions: []string{"v4"},
 			},
 			{
 				Variant: endpoints.FIPSVariant | endpoints.DualStackVariant,
 			}: {
-				Hostname:          "identitystoreinternal-fips.{region}.api.aws",
+				Hostname:          "appsauth-fips.{region}.api.aws",
 				Protocols:         []string{"https"},
 				SignatureVersions: []string{"v4"},
 			},
 			{
 				Variant: 0,
 			}: {
-				Hostname:          "identitystoreinternal.{region}.amazonaws.com",
+				Hostname:          "appsauth.{region}.amazonaws.com",
 				Protocols:         []string{"https"},
 				SignatureVersions: []string{"v4"},
 			},
