@@ -1,0 +1,1064 @@
+{
+    "smithy": "2.0",
+    "shapes": {
+        "com.amazonaws.appsauthcontrol#AppsAuthControlPlaneService": {
+            "type": "service",
+            "version": "2018-10-25",
+            "operations": [
+                {
+                    "target": "com.amazonaws.appsauthcontrol#ListExternalIdPConfigurationsForDirectory"
+                }
+            ],
+            "traits": {
+                "aws.api#service": {
+                    "sdkId": "Apps Auth Control",
+                    "arnNamespace": "appsauth-control",
+                    "cloudFormationName": "AppsAuthControl",
+                    "cloudTrailEventSource": "sso-directory.amazonaws.com",
+                    "endpointPrefix": "appsauth"
+                },
+                "aws.auth#sigv4": {
+                    "name": "appsauth"
+                },
+                "aws.protocols#awsJson1_0": {},
+                "smithy.api#title": "Apps Auth Control",
+                "smithy.rules#endpointRuleSet": {
+                    "version": "1.0",
+                    "parameters": {
+                        "Region": {
+                            "builtIn": "AWS::Region",
+                            "required": false,
+                            "documentation": "The AWS region used to dispatch the request.",
+                            "type": "String"
+                        },
+                        "UseDualStack": {
+                            "builtIn": "AWS::UseDualStack",
+                            "required": true,
+                            "default": false,
+                            "documentation": "When true, use the dual-stack endpoint. If the configured endpoint does not support dual-stack, dispatching the request MAY return an error.",
+                            "type": "Boolean"
+                        },
+                        "UseFIPS": {
+                            "builtIn": "AWS::UseFIPS",
+                            "required": true,
+                            "default": false,
+                            "documentation": "When true, send this request to the FIPS-compliant regional endpoint. If the configured endpoint does not have a FIPS compliant endpoint, dispatching the request will return an error.",
+                            "type": "Boolean"
+                        },
+                        "Endpoint": {
+                            "builtIn": "SDK::Endpoint",
+                            "required": false,
+                            "documentation": "Override the endpoint used to send this request",
+                            "type": "String"
+                        }
+                    },
+                    "rules": [
+                        {
+                            "conditions": [
+                                {
+                                    "fn": "isSet",
+                                    "argv": [
+                                        {
+                                            "ref": "Endpoint"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "rules": [
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "booleanEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "UseDualStack"
+                                                },
+                                                true
+                                            ]
+                                        }
+                                    ],
+                                    "error": "Invalid Configuration: Custom endpoint or DualStack is not supported",
+                                    "type": "error"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "booleanEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "UseFIPS"
+                                                },
+                                                true
+                                            ]
+                                        }
+                                    ],
+                                    "error": "Invalid Configuration: Custom endpoint or FIPS is not supported",
+                                    "type": "error"
+                                },
+                                {
+                                    "conditions": [],
+                                    "error": "Invalid Configuration: Custom endpoint is not supported",
+                                    "type": "error"
+                                }
+                            ],
+                            "type": "tree"
+                        },
+                        {
+                            "conditions": [
+                                {
+                                    "fn": "booleanEquals",
+                                    "argv": [
+                                        {
+                                            "ref": "UseDualStack"
+                                        },
+                                        true
+                                    ]
+                                }
+                            ],
+                            "rules": [
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "booleanEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "UseFIPS"
+                                                },
+                                                true
+                                            ]
+                                        }
+                                    ],
+                                    "error": "Invalid Configuration: DualStack or FIPS is not supported",
+                                    "type": "error"
+                                },
+                                {
+                                    "conditions": [],
+                                    "error": "Invalid Configuration: DualStack is not supported",
+                                    "type": "error"
+                                }
+                            ],
+                            "type": "tree"
+                        },
+                        {
+                            "conditions": [
+                                {
+                                    "fn": "booleanEquals",
+                                    "argv": [
+                                        {
+                                            "ref": "UseFIPS"
+                                        },
+                                        true
+                                    ]
+                                }
+                            ],
+                            "error": "Invalid Configuration: FIPS is not supported",
+                            "type": "error"
+                        },
+                        {
+                            "conditions": [
+                                {
+                                    "fn": "isSet",
+                                    "argv": [
+                                        {
+                                            "ref": "Region"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "rules": [
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "cn-north-1"
+                                            ]
+                                        }
+                                    ],
+                                    "endpoint": {
+                                        "url": "https://auth-control.{Region}.prod.apps-auth.aws.a2z.com.cn/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "cn-northwest-1"
+                                            ]
+                                        }
+                                    ],
+                                    "endpoint": {
+                                        "url": "https://auth-control.{Region}.prod.apps-auth.aws.a2z.com.cn/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "us-isob-east-1"
+                                            ]
+                                        }
+                                    ],
+                                    "error": "Invalid Configuration: Region is not supported",
+                                    "type": "error"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "us-iso-east-1"
+                                            ]
+                                        }
+                                    ],
+                                    "error": "Invalid Configuration: Region is not supported",
+                                    "type": "error"
+                                },
+                                {
+                                    "conditions": [],
+                                    "endpoint": {
+                                        "url": "https://auth-control.{Region}.prod.apps-auth.aws.a2z.com/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                }
+                            ],
+                            "type": "tree"
+                        },
+                        {
+                            "conditions": [],
+                            "error": "Invalid Configuration: Missing Region",
+                            "type": "error"
+                        }
+                    ]
+                },
+                "smithy.rules#endpointTests": {
+                    "testCases": [
+                        {
+                            "documentation": "For region ap-east-1 with FIPS disabled and DualStack disabled",
+                            "expect": {
+                                "endpoint": {
+                                    "url": "https://auth-control.ap-east-1.prod.apps-auth.aws.a2z.com/"
+                                }
+                            },
+                            "params": {
+                                "Region": "ap-east-1",
+                                "UseFIPS": false,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region ap-northeast-1 with FIPS disabled and DualStack disabled",
+                            "expect": {
+                                "endpoint": {
+                                    "url": "https://auth-control.ap-northeast-1.prod.apps-auth.aws.a2z.com/"
+                                }
+                            },
+                            "params": {
+                                "Region": "ap-northeast-1",
+                                "UseFIPS": false,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region ap-northeast-2 with FIPS disabled and DualStack disabled",
+                            "expect": {
+                                "endpoint": {
+                                    "url": "https://auth-control.ap-northeast-2.prod.apps-auth.aws.a2z.com/"
+                                }
+                            },
+                            "params": {
+                                "Region": "ap-northeast-2",
+                                "UseFIPS": false,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region ap-northeast-3 with FIPS disabled and DualStack disabled",
+                            "expect": {
+                                "endpoint": {
+                                    "url": "https://auth-control.ap-northeast-3.prod.apps-auth.aws.a2z.com/"
+                                }
+                            },
+                            "params": {
+                                "Region": "ap-northeast-3",
+                                "UseFIPS": false,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region ap-south-1 with FIPS disabled and DualStack disabled",
+                            "expect": {
+                                "endpoint": {
+                                    "url": "https://auth-control.ap-south-1.prod.apps-auth.aws.a2z.com/"
+                                }
+                            },
+                            "params": {
+                                "Region": "ap-south-1",
+                                "UseFIPS": false,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region ap-southeast-1 with FIPS disabled and DualStack disabled",
+                            "expect": {
+                                "endpoint": {
+                                    "url": "https://auth-control.ap-southeast-1.prod.apps-auth.aws.a2z.com/"
+                                }
+                            },
+                            "params": {
+                                "Region": "ap-southeast-1",
+                                "UseFIPS": false,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region ap-southeast-2 with FIPS disabled and DualStack disabled",
+                            "expect": {
+                                "endpoint": {
+                                    "url": "https://auth-control.ap-southeast-2.prod.apps-auth.aws.a2z.com/"
+                                }
+                            },
+                            "params": {
+                                "Region": "ap-southeast-2",
+                                "UseFIPS": false,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region ca-central-1 with FIPS disabled and DualStack disabled",
+                            "expect": {
+                                "endpoint": {
+                                    "url": "https://auth-control.ca-central-1.prod.apps-auth.aws.a2z.com/"
+                                }
+                            },
+                            "params": {
+                                "Region": "ca-central-1",
+                                "UseFIPS": false,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region eu-central-1 with FIPS disabled and DualStack disabled",
+                            "expect": {
+                                "endpoint": {
+                                    "url": "https://auth-control.eu-central-1.prod.apps-auth.aws.a2z.com/"
+                                }
+                            },
+                            "params": {
+                                "Region": "eu-central-1",
+                                "UseFIPS": false,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region eu-north-1 with FIPS disabled and DualStack disabled",
+                            "expect": {
+                                "endpoint": {
+                                    "url": "https://auth-control.eu-north-1.prod.apps-auth.aws.a2z.com/"
+                                }
+                            },
+                            "params": {
+                                "Region": "eu-north-1",
+                                "UseFIPS": false,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region eu-south-1 with FIPS disabled and DualStack disabled",
+                            "expect": {
+                                "endpoint": {
+                                    "url": "https://auth-control.eu-south-1.prod.apps-auth.aws.a2z.com/"
+                                }
+                            },
+                            "params": {
+                                "Region": "eu-south-1",
+                                "UseFIPS": false,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region eu-west-1 with FIPS disabled and DualStack disabled",
+                            "expect": {
+                                "endpoint": {
+                                    "url": "https://auth-control.eu-west-1.prod.apps-auth.aws.a2z.com/"
+                                }
+                            },
+                            "params": {
+                                "Region": "eu-west-1",
+                                "UseFIPS": false,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region eu-west-2 with FIPS disabled and DualStack disabled",
+                            "expect": {
+                                "endpoint": {
+                                    "url": "https://auth-control.eu-west-2.prod.apps-auth.aws.a2z.com/"
+                                }
+                            },
+                            "params": {
+                                "Region": "eu-west-2",
+                                "UseFIPS": false,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region eu-west-3 with FIPS disabled and DualStack disabled",
+                            "expect": {
+                                "endpoint": {
+                                    "url": "https://auth-control.eu-west-3.prod.apps-auth.aws.a2z.com/"
+                                }
+                            },
+                            "params": {
+                                "Region": "eu-west-3",
+                                "UseFIPS": false,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region me-south-1 with FIPS disabled and DualStack disabled",
+                            "expect": {
+                                "endpoint": {
+                                    "url": "https://auth-control.me-south-1.prod.apps-auth.aws.a2z.com/"
+                                }
+                            },
+                            "params": {
+                                "Region": "me-south-1",
+                                "UseFIPS": false,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region sa-east-1 with FIPS disabled and DualStack disabled",
+                            "expect": {
+                                "endpoint": {
+                                    "url": "https://auth-control.sa-east-1.prod.apps-auth.aws.a2z.com/"
+                                }
+                            },
+                            "params": {
+                                "Region": "sa-east-1",
+                                "UseFIPS": false,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region us-east-1 with FIPS disabled and DualStack disabled",
+                            "expect": {
+                                "endpoint": {
+                                    "url": "https://auth-control.us-east-1.prod.apps-auth.aws.a2z.com/"
+                                }
+                            },
+                            "params": {
+                                "Region": "us-east-1",
+                                "UseFIPS": false,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region us-east-2 with FIPS disabled and DualStack disabled",
+                            "expect": {
+                                "endpoint": {
+                                    "url": "https://auth-control.us-east-2.prod.apps-auth.aws.a2z.com/"
+                                }
+                            },
+                            "params": {
+                                "Region": "us-east-2",
+                                "UseFIPS": false,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region us-west-1 with FIPS disabled and DualStack disabled",
+                            "expect": {
+                                "endpoint": {
+                                    "url": "https://auth-control.us-west-1.prod.apps-auth.aws.a2z.com/"
+                                }
+                            },
+                            "params": {
+                                "Region": "us-west-1",
+                                "UseFIPS": false,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region us-west-2 with FIPS disabled and DualStack disabled",
+                            "expect": {
+                                "endpoint": {
+                                    "url": "https://auth-control.us-west-2.prod.apps-auth.aws.a2z.com/"
+                                }
+                            },
+                            "params": {
+                                "Region": "us-west-2",
+                                "UseFIPS": false,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region us-east-1 with FIPS enabled and DualStack enabled",
+                            "expect": {
+                                "error": "Invalid Configuration: DualStack or FIPS is not supported"
+                            },
+                            "params": {
+                                "Region": "us-east-1",
+                                "UseFIPS": true,
+                                "UseDualStack": true
+                            }
+                        },
+                        {
+                            "documentation": "For region us-east-1 with FIPS enabled and DualStack disabled",
+                            "expect": {
+                                "error": "Invalid Configuration: FIPS is not supported"
+                            },
+                            "params": {
+                                "Region": "us-east-1",
+                                "UseFIPS": true,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region us-east-1 with FIPS disabled and DualStack enabled",
+                            "expect": {
+                                "error": "Invalid Configuration: DualStack is not supported"
+                            },
+                            "params": {
+                                "Region": "us-east-1",
+                                "UseFIPS": false,
+                                "UseDualStack": true
+                            }
+                        },
+                        {
+                            "documentation": "For region cn-north-1 with FIPS disabled and DualStack disabled",
+                            "expect": {
+                                "endpoint": {
+                                    "url": "https://auth-control.cn-north-1.prod.apps-auth.aws.a2z.com.cn/"
+                                }
+                            },
+                            "params": {
+                                "Region": "cn-north-1",
+                                "UseFIPS": false,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region cn-northwest-1 with FIPS disabled and DualStack disabled",
+                            "expect": {
+                                "endpoint": {
+                                    "url": "https://auth-control.cn-northwest-1.prod.apps-auth.aws.a2z.com.cn/"
+                                }
+                            },
+                            "params": {
+                                "Region": "cn-northwest-1",
+                                "UseFIPS": false,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region cn-north-1 with FIPS enabled and DualStack enabled",
+                            "expect": {
+                                "error": "Invalid Configuration: DualStack or FIPS is not supported"
+                            },
+                            "params": {
+                                "Region": "cn-north-1",
+                                "UseFIPS": true,
+                                "UseDualStack": true
+                            }
+                        },
+                        {
+                            "documentation": "For region cn-north-1 with FIPS enabled and DualStack disabled",
+                            "expect": {
+                                "error": "Invalid Configuration: FIPS is not supported"
+                            },
+                            "params": {
+                                "Region": "cn-north-1",
+                                "UseFIPS": true,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region cn-north-1 with FIPS disabled and DualStack enabled",
+                            "expect": {
+                                "error": "Invalid Configuration: DualStack is not supported"
+                            },
+                            "params": {
+                                "Region": "cn-north-1",
+                                "UseFIPS": false,
+                                "UseDualStack": true
+                            }
+                        },
+                        {
+                            "documentation": "For region us-gov-east-1 with FIPS enabled and DualStack enabled",
+                            "expect": {
+                                "error": "Invalid Configuration: DualStack or FIPS is not supported"
+                            },
+                            "params": {
+                                "Region": "us-gov-east-1",
+                                "UseFIPS": true,
+                                "UseDualStack": true
+                            }
+                        },
+                        {
+                            "documentation": "For region us-gov-east-1 with FIPS enabled and DualStack disabled",
+                            "expect": {
+                                "error": "Invalid Configuration: FIPS is not supported"
+                            },
+                            "params": {
+                                "Region": "us-gov-east-1",
+                                "UseFIPS": true,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region us-gov-east-1 with FIPS disabled and DualStack enabled",
+                            "expect": {
+                                "error": "Invalid Configuration: DualStack is not supported"
+                            },
+                            "params": {
+                                "Region": "us-gov-east-1",
+                                "UseFIPS": false,
+                                "UseDualStack": true
+                            }
+                        },
+                        {
+                            "documentation": "For region us-gov-east-1 with FIPS disabled and DualStack disabled",
+                            "expect": {
+                                "endpoint": {
+                                    "url": "https://auth-control.us-gov-east-1.prod.apps-auth.aws.a2z.com/"
+                                }
+                            },
+                            "params": {
+                                "Region": "us-gov-east-1",
+                                "UseFIPS": false,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region us-iso-east-1 with FIPS enabled and DualStack enabled",
+                            "expect": {
+                                "error": "Invalid Configuration: DualStack or FIPS is not supported"
+                            },
+                            "params": {
+                                "Region": "us-iso-east-1",
+                                "UseFIPS": true,
+                                "UseDualStack": true
+                            }
+                        },
+                        {
+                            "documentation": "For region us-iso-east-1 with FIPS enabled and DualStack disabled",
+                            "expect": {
+                                "error": "Invalid Configuration: FIPS is not supported"
+                            },
+                            "params": {
+                                "Region": "us-iso-east-1",
+                                "UseFIPS": true,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region us-iso-east-1 with FIPS disabled and DualStack enabled",
+                            "expect": {
+                                "error": "Invalid Configuration: DualStack is not supported"
+                            },
+                            "params": {
+                                "Region": "us-iso-east-1",
+                                "UseFIPS": false,
+                                "UseDualStack": true
+                            }
+                        },
+                        {
+                            "documentation": "For region us-iso-east-1 with FIPS disabled and DualStack disabled",
+                            "expect": {
+                                "error": "Invalid Configuration: Region is not supported"
+                            },
+                            "params": {
+                                "Region": "us-iso-east-1",
+                                "UseFIPS": false,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region us-isob-east-1 with FIPS enabled and DualStack enabled",
+                            "expect": {
+                                "error": "Invalid Configuration: DualStack or FIPS is not supported"
+                            },
+                            "params": {
+                                "Region": "us-isob-east-1",
+                                "UseFIPS": true,
+                                "UseDualStack": true
+                            }
+                        },
+                        {
+                            "documentation": "For region us-isob-east-1 with FIPS enabled and DualStack disabled",
+                            "expect": {
+                                "error": "Invalid Configuration: FIPS is not supported"
+                            },
+                            "params": {
+                                "Region": "us-isob-east-1",
+                                "UseFIPS": true,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For region us-isob-east-1 with FIPS disabled and DualStack enabled",
+                            "expect": {
+                                "error": "Invalid Configuration: DualStack is not supported"
+                            },
+                            "params": {
+                                "Region": "us-isob-east-1",
+                                "UseFIPS": false,
+                                "UseDualStack": true
+                            }
+                        },
+                        {
+                            "documentation": "For region us-isob-east-1 with FIPS disabled and DualStack disabled",
+                            "expect": {
+                                "error": "Invalid Configuration: Region is not supported"
+                            },
+                            "params": {
+                                "Region": "us-isob-east-1",
+                                "UseFIPS": false,
+                                "UseDualStack": false
+                            }
+                        },
+                        {
+                            "documentation": "For custom endpoint with region set and fips disabled and dualstack disabled",
+                            "expect": {
+                                "error": "Invalid Configuration: Custom endpoint is not supported"
+                            },
+                            "params": {
+                                "Region": "us-east-1",
+                                "UseFIPS": false,
+                                "UseDualStack": false,
+                                "Endpoint": "https://example.com"
+                            }
+                        },
+                        {
+                            "documentation": "For custom endpoint with region not set and fips disabled and dualstack disabled",
+                            "expect": {
+                                "error": "Invalid Configuration: Custom endpoint is not supported"
+                            },
+                            "params": {
+                                "UseFIPS": false,
+                                "UseDualStack": false,
+                                "Endpoint": "https://example.com"
+                            }
+                        },
+                        {
+                            "documentation": "For custom endpoint with fips enabled and dualstack disabled",
+                            "expect": {
+                                "error": "Invalid Configuration: Custom endpoint or FIPS is not supported"
+                            },
+                            "params": {
+                                "Region": "us-east-1",
+                                "UseFIPS": true,
+                                "UseDualStack": false,
+                                "Endpoint": "https://example.com"
+                            }
+                        },
+                        {
+                            "documentation": "For custom endpoint with fips disabled and dualstack enabled",
+                            "expect": {
+                                "error": "Invalid Configuration: Custom endpoint or DualStack is not supported"
+                            },
+                            "params": {
+                                "Region": "us-east-1",
+                                "UseFIPS": false,
+                                "UseDualStack": true,
+                                "Endpoint": "https://example.com"
+                            }
+                        },
+                        {
+                            "documentation": "Missing region",
+                            "expect": {
+                                "error": "Invalid Configuration: Missing Region"
+                            }
+                        }
+                    ],
+                    "version": "1.0"
+                }
+            }
+        },
+        "com.amazonaws.appsauthcontrol#booleanType": {
+            "type": "boolean",
+            "traits": {
+                "smithy.api#default": false
+            }
+        },
+        "com.amazonaws.appsauthcontrol#Certificate": {
+            "type": "structure",
+            "members": {
+                "certificateId": {
+                    "target": "com.amazonaws.appsauthcontrol#stringType",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The certificate identifier.</p>",
+                        "smithy.api#required": {}
+                    }
+                },
+                "status": {
+                    "target": "com.amazonaws.appsauthcontrol#stringType",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The certificate status.</p>",
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "com.amazonaws.appsauthcontrol#Certificates": {
+            "type": "list",
+            "member": {
+                "target": "com.amazonaws.appsauthcontrol#Certificate"
+            }
+        },
+        "com.amazonaws.appsauthcontrol#IdentityStoreId": {
+            "type": "string",
+            "traits": {
+                "smithy.api#length": {
+                    "min": 1,
+                    "max": 36
+                },
+                "smithy.api#pattern": "^d-[0-9a-f]{10}$|^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            }
+        },
+        "com.amazonaws.appsauthcontrol#IdpIdentifierType": {
+            "type": "string",
+            "traits": {
+                "smithy.api#length": {
+                    "min": 1,
+                    "max": 40
+                },
+                "smithy.api#pattern": "^[\\w\\s+=.@-]+$"
+            }
+        },
+        "com.amazonaws.appsauthcontrol#IdpAssociation": {
+            "type": "structure",
+            "members": {
+                "idpId": {
+                    "target": "com.amazonaws.appsauthcontrol#IdpIdentifierType",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The IdP identifier.</p>",
+                        "smithy.api#required": {}
+                    }
+                },
+                "isEnabled": {
+                    "target": "com.amazonaws.appsauthcontrol#booleanType",
+                    "traits": {
+                        "smithy.api#documentation": "<p>A boolean which indicates whether the IdP is enabled.</p>",
+                        "smithy.api#default": false,
+                        "smithy.api#required": {}
+                    }
+                },
+                "idpSAMLAssociationValue": {
+                    "target": "com.amazonaws.appsauthcontrol#IdpSAMLAssociation",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The IdP SAML association details.</p>"
+                    }
+                },
+                "idpOIDCAssociationValue": {
+                    "target": "com.amazonaws.appsauthcontrol#IdpOIDCAssociation",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The IdP OIDC association details.</p>"
+                    }
+                },
+                "idpSAMLConfig": {
+                    "target": "com.amazonaws.appsauthcontrol#IdpSAMLConfiguration",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The IdP SAML configuration.</p>"
+                    }
+                },
+                "idpCertificateIds": {
+                    "target": "com.amazonaws.appsauthcontrol#Certificates",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The IdP certificates.</p>"
+                    }
+                }
+            }
+        },
+        "com.amazonaws.appsauthcontrol#IdpAssociations": {
+            "type": "list",
+            "member": {
+                "target": "com.amazonaws.appsauthcontrol#IdpAssociation"
+            }
+        },
+        "com.amazonaws.appsauthcontrol#IdpOIDCAssociation": {
+            "type": "structure",
+            "members": {
+                "idpOIDCConfig": {
+                    "target": "com.amazonaws.appsauthcontrol#IdpOIDCConfiguration",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The IdP OIDC configuration.</p>",
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "com.amazonaws.appsauthcontrol#IdpOIDCClaimDefinition": {
+            "type": "structure",
+            "members": {
+                "tokenClaim": {
+                    "target": "com.amazonaws.appsauthcontrol#stringType",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "userAttributeName": {
+                    "target": "com.amazonaws.appsauthcontrol#stringType",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "com.amazonaws.appsauthcontrol#IdpOIDCConfiguration": {
+            "type": "structure",
+            "members": {
+                "issuerURL": {
+                    "target": "com.amazonaws.appsauthcontrol#stringType",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "authorizationEndpoint": {
+                    "target": "com.amazonaws.appsauthcontrol#stringType"
+                },
+                "tokenEndpoint": {
+                    "target": "com.amazonaws.appsauthcontrol#stringType"
+                },
+                "scopes": {
+                    "target": "com.amazonaws.appsauthcontrol#stringListType"
+                },
+                "audience": {
+                    "target": "com.amazonaws.appsauthcontrol#stringType",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "jwksUri": {
+                    "target": "com.amazonaws.appsauthcontrol#stringType"
+                },
+                "clientId": {
+                    "target": "com.amazonaws.appsauthcontrol#stringType"
+                },
+                "userIdentityClaimDefinition": {
+                    "target": "com.amazonaws.appsauthcontrol#IdpOIDCClaimDefinition",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "com.amazonaws.appsauthcontrol#IdpSAMLAssociation": {
+            "type": "structure",
+            "members": {
+                "idpSAMLConfig": {
+                    "target": "com.amazonaws.appsauthcontrol#IdpSAMLConfiguration",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The IdP SAML configuration.</p>",
+                        "smithy.api#required": {}
+                    }
+                },
+                "idpCertificateIds": {
+                    "target": "com.amazonaws.appsauthcontrol#Certificates",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The IdP certificates.</p>",
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "com.amazonaws.appsauthcontrol#IdpSAMLConfiguration": {
+            "type": "structure",
+            "members": {
+                "entityId": {
+                    "target": "com.amazonaws.appsauthcontrol#stringType",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "loginURL": {
+                    "target": "com.amazonaws.appsauthcontrol#stringType",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                },
+                "wantRequestSigned": {
+                    "target": "com.amazonaws.appsauthcontrol#booleanType",
+                    "traits": {
+                        "smithy.api#default": false
+                    }
+                }
+            }
+        },
+        "com.amazonaws.appsauthcontrol#ListExternalIdPConfigurationsForDirectory": {
+            "type": "operation",
+            "input": {
+                "target": "com.amazonaws.appsauthcontrol#ListExternalIdPConfigurationsForDirectoryRequest"
+            },
+            "output": {
+                "target": "com.amazonaws.appsauthcontrol#ListExternalIdPConfigurationsForDirectoryResponse"
+            },
+            "traits": {
+                "smithy.api#documentation": "<p>List External Identity Providers configuration for the identity store</p>",
+                "smithy.api#readonly": {}
+            }
+        },
+        "com.amazonaws.appsauthcontrol#ListExternalIdPConfigurationsForDirectoryRequest": {
+            "type": "structure",
+            "members": {
+                "directoryId": {
+                    "target": "com.amazonaws.appsauthcontrol#IdentityStoreId",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The globally unique identifier for the identity store, such as\n         <code>d-1234567890</code>. In this example, <code>d-</code> is a fixed prefix, and\n            <code>1234567890</code> is a randomly generated string that contains numbers and lower\n         case letters. This value is generated at the time that a new identity store is\n         created.</p>",
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "com.amazonaws.appsauthcontrol#ListExternalIdPConfigurationsForDirectoryResponse": {
+            "type": "structure",
+            "members": {
+                "associations": {
+                    "target": "com.amazonaws.appsauthcontrol#IdpAssociations",
+                    "traits": {
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "com.amazonaws.appsauthcontrol#stringListType": {
+            "type": "list",
+            "member": {
+                "target": "com.amazonaws.appsauthcontrol#stringType"
+            }
+        },
+        "com.amazonaws.appsauthcontrol#stringType": {
+            "type": "string",
+            "traits": {
+                "smithy.api#length": {
+                    "min": 0,
+                    "max": 131072
+                }
+            }
+        }
+    }
+}

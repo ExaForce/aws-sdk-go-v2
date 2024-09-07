@@ -3,7 +3,7 @@
     "shapes": {
         "com.amazonaws.identitystoreinternal#AWSIdentityStoreService": {
             "type": "service",
-            "version": "2024-08-22",
+            "version": "2019-11-01",
             "operations": [
                 {
                     "target": "com.amazonaws.identitystoreinternal#SearchUsers"
@@ -31,7 +31,7 @@
                     "arnNamespace": "identitystore",
                     "cloudFormationName": "IdentityStore",
                     "cloudTrailEventSource": "sso-directory.amazonaws.com",
-                    "endpointPrefix": "up.sso"
+                    "endpointPrefix": "identitystoreinternal"
                 },
                 "aws.auth#sigv4": {
                     "name": "identitystore"
@@ -81,7 +81,57 @@
                                     ]
                                 }
                             ],
-                            "type": "tree",
+                            "rules": [
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "booleanEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "UseDualStack"
+                                                },
+                                                true
+                                            ]
+                                        }
+                                    ],
+                                    "error": "Invalid Configuration: Custom endpoint or DualStack is not supported",
+                                    "type": "error"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "booleanEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "UseFIPS"
+                                                },
+                                                true
+                                            ]
+                                        }
+                                    ],
+                                    "error": "Invalid Configuration: Custom endpoint or FIPS is not supported",
+                                    "type": "error"
+                                },
+                                {
+                                    "conditions": [],
+                                    "error": "Invalid Configuration: Custom endpoint is not supported",
+                                    "type": "error"
+                                }
+                            ],
+                            "type": "tree"
+                        },
+                        {
+                            "conditions": [
+                                {
+                                    "fn": "booleanEquals",
+                                    "argv": [
+                                        {
+                                            "ref": "UseDualStack"
+                                        },
+                                        true
+                                    ]
+                                }
+                            ],
                             "rules": [
                                 {
                                     "conditions": [
@@ -95,36 +145,31 @@
                                             ]
                                         }
                                     ],
-                                    "error": "Invalid Configuration: FIPS and custom endpoint are not supported",
-                                    "type": "error"
-                                },
-                                {
-                                    "conditions": [
-                                        {
-                                            "fn": "booleanEquals",
-                                            "argv": [
-                                                {
-                                                    "ref": "UseDualStack"
-                                                },
-                                                true
-                                            ]
-                                        }
-                                    ],
-                                    "error": "Invalid Configuration: Dualstack and custom endpoint are not supported",
+                                    "error": "Invalid Configuration: DualStack or FIPS is not supported",
                                     "type": "error"
                                 },
                                 {
                                     "conditions": [],
-                                    "endpoint": {
-                                        "url": {
-                                            "ref": "Endpoint"
-                                        },
-                                        "properties": {},
-                                        "headers": {}
-                                    },
-                                    "type": "endpoint"
+                                    "error": "Invalid Configuration: DualStack is not supported",
+                                    "type": "error"
                                 }
-                            ]
+                            ],
+                            "type": "tree"
+                        },
+                        {
+                            "conditions": [
+                                {
+                                    "fn": "booleanEquals",
+                                    "argv": [
+                                        {
+                                            "ref": "UseFIPS"
+                                        },
+                                        true
+                                    ]
+                                }
+                            ],
+                            "error": "Invalid Configuration: FIPS is not supported",
+                            "type": "error"
                         },
                         {
                             "conditions": [
@@ -142,1910 +187,535 @@
                                 {
                                     "conditions": [
                                         {
-                                            "fn": "aws.partition",
+                                            "fn": "stringEquals",
                                             "argv": [
                                                 {
                                                     "ref": "Region"
-                                                }
-                                            ],
-                                            "assign": "PartitionResult"
+                                                },
+                                                "eu-south-1"
+                                            ]
                                         }
                                     ],
-                                    "type": "tree",
-                                    "rules": [
+                                    "endpoint": {
+                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                },
+                                {
+                                    "conditions": [
                                         {
-                                            "conditions": [
+                                            "fn": "stringEquals",
+                                            "argv": [
                                                 {
-                                                    "fn": "booleanEquals",
-                                                    "argv": [
-                                                        {
-                                                            "ref": "UseFIPS"
-                                                        },
-                                                        true
-                                                    ]
+                                                    "ref": "Region"
                                                 },
-                                                {
-                                                    "fn": "booleanEquals",
-                                                    "argv": [
-                                                        {
-                                                            "ref": "UseDualStack"
-                                                        },
-                                                        true
-                                                    ]
-                                                }
-                                            ],
-                                            "type": "tree",
-                                            "rules": [
-                                                {
-                                                    "conditions": [
-                                                        {
-                                                            "fn": "booleanEquals",
-                                                            "argv": [
-                                                                true,
-                                                                {
-                                                                    "fn": "getAttr",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "PartitionResult"
-                                                                        },
-                                                                        "supportsFIPS"
-                                                                    ]
-                                                                }
-                                                            ]
-                                                        },
-                                                        {
-                                                            "fn": "booleanEquals",
-                                                            "argv": [
-                                                                true,
-                                                                {
-                                                                    "fn": "getAttr",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "PartitionResult"
-                                                                        },
-                                                                        "supportsDualStack"
-                                                                    ]
-                                                                }
-                                                            ]
-                                                        }
-                                                    ],
-                                                    "type": "tree",
-                                                    "rules": [
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "eu-south-1"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso-fips.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "eu-west-3"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso-fips.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "eu-south-2"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso-fips.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "eu-north-1"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso-fips.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "eu-central-2"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso-fips.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "il-central-1"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso-fips.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "me-south-1"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso-fips.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "me-central-1"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso-fips.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "sa-east-1"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso-fips.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "us-gov-east-1"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso-fips.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "us-gov-west-1"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso-fips.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "us-west-1"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso-fips.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "af-south-1"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso-fips.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "ap-east-1"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso-fips.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "ap-south-2"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso-fips.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "ap-southeast-3"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso-fips.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "ap-southeast-4"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso-fips.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "ap-south-1"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso-fips.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "ap-northeast-3"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso-fips.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "ap-northeast-2"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso-fips.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "ap-northeast-1"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso-fips.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "ca-west-1"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso-fips.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [],
-                                                            "endpoint": {
-                                                                "url": "https://up.sso-fips.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "conditions": [],
-                                                    "error": "FIPS and DualStack are enabled, but this partition does not support one or both",
-                                                    "type": "error"
-                                                }
+                                                "eu-west-3"
                                             ]
-                                        },
-                                        {
-                                            "conditions": [
-                                                {
-                                                    "fn": "booleanEquals",
-                                                    "argv": [
-                                                        {
-                                                            "ref": "UseFIPS"
-                                                        },
-                                                        true
-                                                    ]
-                                                }
-                                            ],
-                                            "type": "tree",
-                                            "rules": [
-                                                {
-                                                    "conditions": [
-                                                        {
-                                                            "fn": "booleanEquals",
-                                                            "argv": [
-                                                                true,
-                                                                {
-                                                                    "fn": "getAttr",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "PartitionResult"
-                                                                        },
-                                                                        "supportsFIPS"
-                                                                    ]
-                                                                }
-                                                            ]
-                                                        }
-                                                    ],
-                                                    "type": "tree",
-                                                    "rules": [
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        "aws-us-gov",
-                                                                        {
-                                                                            "fn": "getAttr",
-                                                                            "argv": [
-                                                                                {
-                                                                                    "ref": "PartitionResult"
-                                                                                },
-                                                                                "name"
-                                                                            ]
-                                                                        }
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "type": "tree",
-                                                            "rules": [
-                                                                {
-                                                                    "conditions": [
-                                                                        {
-                                                                            "fn": "stringEquals",
-                                                                            "argv": [
-                                                                                {
-                                                                                    "ref": "Region"
-                                                                                },
-                                                                                "eu-south-1"
-                                                                            ]
-                                                                        }
-                                                                    ],
-                                                                    "endpoint": {
-                                                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
-                                                                        "properties": {},
-                                                                        "headers": {}
-                                                                    },
-                                                                    "type": "endpoint"
-                                                                },
-                                                                {
-                                                                    "conditions": [
-                                                                        {
-                                                                            "fn": "stringEquals",
-                                                                            "argv": [
-                                                                                {
-                                                                                    "ref": "Region"
-                                                                                },
-                                                                                "eu-west-3"
-                                                                            ]
-                                                                        }
-                                                                    ],
-                                                                    "endpoint": {
-                                                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
-                                                                        "properties": {},
-                                                                        "headers": {}
-                                                                    },
-                                                                    "type": "endpoint"
-                                                                },
-                                                                {
-                                                                    "conditions": [
-                                                                        {
-                                                                            "fn": "stringEquals",
-                                                                            "argv": [
-                                                                                {
-                                                                                    "ref": "Region"
-                                                                                },
-                                                                                "eu-south-2"
-                                                                            ]
-                                                                        }
-                                                                    ],
-                                                                    "endpoint": {
-                                                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
-                                                                        "properties": {},
-                                                                        "headers": {}
-                                                                    },
-                                                                    "type": "endpoint"
-                                                                },
-                                                                {
-                                                                    "conditions": [
-                                                                        {
-                                                                            "fn": "stringEquals",
-                                                                            "argv": [
-                                                                                {
-                                                                                    "ref": "Region"
-                                                                                },
-                                                                                "eu-north-1"
-                                                                            ]
-                                                                        }
-                                                                    ],
-                                                                    "endpoint": {
-                                                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
-                                                                        "properties": {},
-                                                                        "headers": {}
-                                                                    },
-                                                                    "type": "endpoint"
-                                                                },
-                                                                {
-                                                                    "conditions": [
-                                                                        {
-                                                                            "fn": "stringEquals",
-                                                                            "argv": [
-                                                                                {
-                                                                                    "ref": "Region"
-                                                                                },
-                                                                                "eu-central-2"
-                                                                            ]
-                                                                        }
-                                                                    ],
-                                                                    "endpoint": {
-                                                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
-                                                                        "properties": {},
-                                                                        "headers": {}
-                                                                    },
-                                                                    "type": "endpoint"
-                                                                },
-                                                                {
-                                                                    "conditions": [
-                                                                        {
-                                                                            "fn": "stringEquals",
-                                                                            "argv": [
-                                                                                {
-                                                                                    "ref": "Region"
-                                                                                },
-                                                                                "il-central-1"
-                                                                            ]
-                                                                        }
-                                                                    ],
-                                                                    "endpoint": {
-                                                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
-                                                                        "properties": {},
-                                                                        "headers": {}
-                                                                    },
-                                                                    "type": "endpoint"
-                                                                },
-                                                                {
-                                                                    "conditions": [
-                                                                        {
-                                                                            "fn": "stringEquals",
-                                                                            "argv": [
-                                                                                {
-                                                                                    "ref": "Region"
-                                                                                },
-                                                                                "me-south-1"
-                                                                            ]
-                                                                        }
-                                                                    ],
-                                                                    "endpoint": {
-                                                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
-                                                                        "properties": {},
-                                                                        "headers": {}
-                                                                    },
-                                                                    "type": "endpoint"
-                                                                },
-                                                                {
-                                                                    "conditions": [
-                                                                        {
-                                                                            "fn": "stringEquals",
-                                                                            "argv": [
-                                                                                {
-                                                                                    "ref": "Region"
-                                                                                },
-                                                                                "me-central-1"
-                                                                            ]
-                                                                        }
-                                                                    ],
-                                                                    "endpoint": {
-                                                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
-                                                                        "properties": {},
-                                                                        "headers": {}
-                                                                    },
-                                                                    "type": "endpoint"
-                                                                },
-                                                                {
-                                                                    "conditions": [
-                                                                        {
-                                                                            "fn": "stringEquals",
-                                                                            "argv": [
-                                                                                {
-                                                                                    "ref": "Region"
-                                                                                },
-                                                                                "sa-east-1"
-                                                                            ]
-                                                                        }
-                                                                    ],
-                                                                    "endpoint": {
-                                                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
-                                                                        "properties": {},
-                                                                        "headers": {}
-                                                                    },
-                                                                    "type": "endpoint"
-                                                                },
-                                                                {
-                                                                    "conditions": [
-                                                                        {
-                                                                            "fn": "stringEquals",
-                                                                            "argv": [
-                                                                                {
-                                                                                    "ref": "Region"
-                                                                                },
-                                                                                "us-gov-east-1"
-                                                                            ]
-                                                                        }
-                                                                    ],
-                                                                    "endpoint": {
-                                                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
-                                                                        "properties": {},
-                                                                        "headers": {}
-                                                                    },
-                                                                    "type": "endpoint"
-                                                                },
-                                                                {
-                                                                    "conditions": [
-                                                                        {
-                                                                            "fn": "stringEquals",
-                                                                            "argv": [
-                                                                                {
-                                                                                    "ref": "Region"
-                                                                                },
-                                                                                "us-gov-west-1"
-                                                                            ]
-                                                                        }
-                                                                    ],
-                                                                    "endpoint": {
-                                                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
-                                                                        "properties": {},
-                                                                        "headers": {}
-                                                                    },
-                                                                    "type": "endpoint"
-                                                                },
-                                                                {
-                                                                    "conditions": [
-                                                                        {
-                                                                            "fn": "stringEquals",
-                                                                            "argv": [
-                                                                                {
-                                                                                    "ref": "Region"
-                                                                                },
-                                                                                "us-west-1"
-                                                                            ]
-                                                                        }
-                                                                    ],
-                                                                    "endpoint": {
-                                                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
-                                                                        "properties": {},
-                                                                        "headers": {}
-                                                                    },
-                                                                    "type": "endpoint"
-                                                                },
-                                                                {
-                                                                    "conditions": [
-                                                                        {
-                                                                            "fn": "stringEquals",
-                                                                            "argv": [
-                                                                                {
-                                                                                    "ref": "Region"
-                                                                                },
-                                                                                "af-south-1"
-                                                                            ]
-                                                                        }
-                                                                    ],
-                                                                    "endpoint": {
-                                                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
-                                                                        "properties": {},
-                                                                        "headers": {}
-                                                                    },
-                                                                    "type": "endpoint"
-                                                                },
-                                                                {
-                                                                    "conditions": [
-                                                                        {
-                                                                            "fn": "stringEquals",
-                                                                            "argv": [
-                                                                                {
-                                                                                    "ref": "Region"
-                                                                                },
-                                                                                "ap-east-1"
-                                                                            ]
-                                                                        }
-                                                                    ],
-                                                                    "endpoint": {
-                                                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
-                                                                        "properties": {},
-                                                                        "headers": {}
-                                                                    },
-                                                                    "type": "endpoint"
-                                                                },
-                                                                {
-                                                                    "conditions": [
-                                                                        {
-                                                                            "fn": "stringEquals",
-                                                                            "argv": [
-                                                                                {
-                                                                                    "ref": "Region"
-                                                                                },
-                                                                                "ap-south-2"
-                                                                            ]
-                                                                        }
-                                                                    ],
-                                                                    "endpoint": {
-                                                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
-                                                                        "properties": {},
-                                                                        "headers": {}
-                                                                    },
-                                                                    "type": "endpoint"
-                                                                },
-                                                                {
-                                                                    "conditions": [
-                                                                        {
-                                                                            "fn": "stringEquals",
-                                                                            "argv": [
-                                                                                {
-                                                                                    "ref": "Region"
-                                                                                },
-                                                                                "ap-southeast-3"
-                                                                            ]
-                                                                        }
-                                                                    ],
-                                                                    "endpoint": {
-                                                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
-                                                                        "properties": {},
-                                                                        "headers": {}
-                                                                    },
-                                                                    "type": "endpoint"
-                                                                },
-                                                                {
-                                                                    "conditions": [
-                                                                        {
-                                                                            "fn": "stringEquals",
-                                                                            "argv": [
-                                                                                {
-                                                                                    "ref": "Region"
-                                                                                },
-                                                                                "ap-southeast-4"
-                                                                            ]
-                                                                        }
-                                                                    ],
-                                                                    "endpoint": {
-                                                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
-                                                                        "properties": {},
-                                                                        "headers": {}
-                                                                    },
-                                                                    "type": "endpoint"
-                                                                },
-                                                                {
-                                                                    "conditions": [
-                                                                        {
-                                                                            "fn": "stringEquals",
-                                                                            "argv": [
-                                                                                {
-                                                                                    "ref": "Region"
-                                                                                },
-                                                                                "ap-south-1"
-                                                                            ]
-                                                                        }
-                                                                    ],
-                                                                    "endpoint": {
-                                                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
-                                                                        "properties": {},
-                                                                        "headers": {}
-                                                                    },
-                                                                    "type": "endpoint"
-                                                                },
-                                                                {
-                                                                    "conditions": [
-                                                                        {
-                                                                            "fn": "stringEquals",
-                                                                            "argv": [
-                                                                                {
-                                                                                    "ref": "Region"
-                                                                                },
-                                                                                "ap-northeast-3"
-                                                                            ]
-                                                                        }
-                                                                    ],
-                                                                    "endpoint": {
-                                                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
-                                                                        "properties": {},
-                                                                        "headers": {}
-                                                                    },
-                                                                    "type": "endpoint"
-                                                                },
-                                                                {
-                                                                    "conditions": [
-                                                                        {
-                                                                            "fn": "stringEquals",
-                                                                            "argv": [
-                                                                                {
-                                                                                    "ref": "Region"
-                                                                                },
-                                                                                "ap-northeast-2"
-                                                                            ]
-                                                                        }
-                                                                    ],
-                                                                    "endpoint": {
-                                                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
-                                                                        "properties": {},
-                                                                        "headers": {}
-                                                                    },
-                                                                    "type": "endpoint"
-                                                                },
-                                                                {
-                                                                    "conditions": [
-                                                                        {
-                                                                            "fn": "stringEquals",
-                                                                            "argv": [
-                                                                                {
-                                                                                    "ref": "Region"
-                                                                                },
-                                                                                "ap-northeast-1"
-                                                                            ]
-                                                                        }
-                                                                    ],
-                                                                    "endpoint": {
-                                                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
-                                                                        "properties": {},
-                                                                        "headers": {}
-                                                                    },
-                                                                    "type": "endpoint"
-                                                                },
-                                                                {
-                                                                    "conditions": [
-                                                                        {
-                                                                            "fn": "stringEquals",
-                                                                            "argv": [
-                                                                                {
-                                                                                    "ref": "Region"
-                                                                                },
-                                                                                "ca-west-1"
-                                                                            ]
-                                                                        }
-                                                                    ],
-                                                                    "endpoint": {
-                                                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
-                                                                        "properties": {},
-                                                                        "headers": {}
-                                                                    },
-                                                                    "type": "endpoint"
-                                                                },
-                                                                {
-                                                                    "conditions": [],
-                                                                    "endpoint": {
-                                                                        "url": "https://up.sso.{Region}.amazonaws.com/identitystore/",
-                                                                        "properties": {},
-                                                                        "headers": {}
-                                                                    },
-                                                                    "type": "endpoint"
-                                                                }
-                                                            ]
-                                                        },
-                                                        {
-                                                            "conditions": [],
-                                                            "endpoint": {
-                                                                "url": "https://up.sso-fips.{Region}.{PartitionResult#dnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "conditions": [],
-                                                    "error": "FIPS is enabled but this partition does not support FIPS",
-                                                    "type": "error"
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "conditions": [
-                                                {
-                                                    "fn": "booleanEquals",
-                                                    "argv": [
-                                                        {
-                                                            "ref": "UseDualStack"
-                                                        },
-                                                        true
-                                                    ]
-                                                }
-                                            ],
-                                            "type": "tree",
-                                            "rules": [
-                                                {
-                                                    "conditions": [
-                                                        {
-                                                            "fn": "booleanEquals",
-                                                            "argv": [
-                                                                true,
-                                                                {
-                                                                    "fn": "getAttr",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "PartitionResult"
-                                                                        },
-                                                                        "supportsDualStack"
-                                                                    ]
-                                                                }
-                                                            ]
-                                                        }
-                                                    ],
-                                                    "type": "tree",
-                                                    "rules": [
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "eu-south-1"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "eu-west-3"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "eu-south-2"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "eu-north-1"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "eu-central-2"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "il-central-1"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "me-south-1"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "me-central-1"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "sa-east-1"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "us-gov-east-1"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "us-gov-west-1"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "us-west-1"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "af-south-1"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "ap-east-1"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "ap-south-2"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "ap-southeast-3"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "ap-southeast-4"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "ap-south-1"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "ap-northeast-3"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "ap-northeast-2"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "ap-northeast-1"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [
-                                                                {
-                                                                    "fn": "stringEquals",
-                                                                    "argv": [
-                                                                        {
-                                                                            "ref": "Region"
-                                                                        },
-                                                                        "ca-west-1"
-                                                                    ]
-                                                                }
-                                                            ],
-                                                            "endpoint": {
-                                                                "url": "https://up-sso.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        },
-                                                        {
-                                                            "conditions": [],
-                                                            "endpoint": {
-                                                                "url": "https://up.sso.{Region}.{PartitionResult#dualStackDnsSuffix}/identitystore/",
-                                                                "properties": {},
-                                                                "headers": {}
-                                                            },
-                                                            "type": "endpoint"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "conditions": [],
-                                                    "error": "DualStack is enabled but this partition does not support DualStack",
-                                                    "type": "error"
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "conditions": [
-                                                {
-                                                    "fn": "stringEquals",
-                                                    "argv": [
-                                                        {
-                                                            "ref": "Region"
-                                                        },
-                                                        "eu-south-1"
-                                                    ]
-                                                }
-                                            ],
-                                            "endpoint": {
-                                                "url": "https://up-sso.{Region}.{PartitionResult#dnsSuffix}/identitystore/",
-                                                "properties": {},
-                                                "headers": {}
-                                            },
-                                            "type": "endpoint"
-                                        },
-                                        {
-                                            "conditions": [
-                                                {
-                                                    "fn": "stringEquals",
-                                                    "argv": [
-                                                        {
-                                                            "ref": "Region"
-                                                        },
-                                                        "eu-west-3"
-                                                    ]
-                                                }
-                                            ],
-                                            "endpoint": {
-                                                "url": "https://up-sso.{Region}.{PartitionResult#dnsSuffix}/identitystore/",
-                                                "properties": {},
-                                                "headers": {}
-                                            },
-                                            "type": "endpoint"
-                                        },
-                                        {
-                                            "conditions": [
-                                                {
-                                                    "fn": "stringEquals",
-                                                    "argv": [
-                                                        {
-                                                            "ref": "Region"
-                                                        },
-                                                        "eu-south-2"
-                                                    ]
-                                                }
-                                            ],
-                                            "endpoint": {
-                                                "url": "https://up-sso.{Region}.{PartitionResult#dnsSuffix}/identitystore/",
-                                                "properties": {},
-                                                "headers": {}
-                                            },
-                                            "type": "endpoint"
-                                        },
-                                        {
-                                            "conditions": [
-                                                {
-                                                    "fn": "stringEquals",
-                                                    "argv": [
-                                                        {
-                                                            "ref": "Region"
-                                                        },
-                                                        "eu-north-1"
-                                                    ]
-                                                }
-                                            ],
-                                            "endpoint": {
-                                                "url": "https://up-sso.{Region}.{PartitionResult#dnsSuffix}/identitystore/",
-                                                "properties": {},
-                                                "headers": {}
-                                            },
-                                            "type": "endpoint"
-                                        },
-                                        {
-                                            "conditions": [
-                                                {
-                                                    "fn": "stringEquals",
-                                                    "argv": [
-                                                        {
-                                                            "ref": "Region"
-                                                        },
-                                                        "eu-central-2"
-                                                    ]
-                                                }
-                                            ],
-                                            "endpoint": {
-                                                "url": "https://up-sso.{Region}.{PartitionResult#dnsSuffix}/identitystore/",
-                                                "properties": {},
-                                                "headers": {}
-                                            },
-                                            "type": "endpoint"
-                                        },
-                                        {
-                                            "conditions": [
-                                                {
-                                                    "fn": "stringEquals",
-                                                    "argv": [
-                                                        {
-                                                            "ref": "Region"
-                                                        },
-                                                        "il-central-1"
-                                                    ]
-                                                }
-                                            ],
-                                            "endpoint": {
-                                                "url": "https://up-sso.{Region}.{PartitionResult#dnsSuffix}/identitystore/",
-                                                "properties": {},
-                                                "headers": {}
-                                            },
-                                            "type": "endpoint"
-                                        },
-                                        {
-                                            "conditions": [
-                                                {
-                                                    "fn": "stringEquals",
-                                                    "argv": [
-                                                        {
-                                                            "ref": "Region"
-                                                        },
-                                                        "me-south-1"
-                                                    ]
-                                                }
-                                            ],
-                                            "endpoint": {
-                                                "url": "https://up-sso.{Region}.{PartitionResult#dnsSuffix}/identitystore/",
-                                                "properties": {},
-                                                "headers": {}
-                                            },
-                                            "type": "endpoint"
-                                        },
-                                        {
-                                            "conditions": [
-                                                {
-                                                    "fn": "stringEquals",
-                                                    "argv": [
-                                                        {
-                                                            "ref": "Region"
-                                                        },
-                                                        "me-central-1"
-                                                    ]
-                                                }
-                                            ],
-                                            "endpoint": {
-                                                "url": "https://up-sso.{Region}.{PartitionResult#dnsSuffix}/identitystore/",
-                                                "properties": {},
-                                                "headers": {}
-                                            },
-                                            "type": "endpoint"
-                                        },
-                                        {
-                                            "conditions": [
-                                                {
-                                                    "fn": "stringEquals",
-                                                    "argv": [
-                                                        {
-                                                            "ref": "Region"
-                                                        },
-                                                        "sa-east-1"
-                                                    ]
-                                                }
-                                            ],
-                                            "endpoint": {
-                                                "url": "https://up-sso.{Region}.{PartitionResult#dnsSuffix}/identitystore/",
-                                                "properties": {},
-                                                "headers": {}
-                                            },
-                                            "type": "endpoint"
-                                        },
-                                        {
-                                            "conditions": [
-                                                {
-                                                    "fn": "stringEquals",
-                                                    "argv": [
-                                                        {
-                                                            "ref": "Region"
-                                                        },
-                                                        "us-gov-east-1"
-                                                    ]
-                                                }
-                                            ],
-                                            "endpoint": {
-                                                "url": "https://up-sso.{Region}.{PartitionResult#dnsSuffix}/identitystore/",
-                                                "properties": {},
-                                                "headers": {}
-                                            },
-                                            "type": "endpoint"
-                                        },
-                                        {
-                                            "conditions": [
-                                                {
-                                                    "fn": "stringEquals",
-                                                    "argv": [
-                                                        {
-                                                            "ref": "Region"
-                                                        },
-                                                        "us-gov-west-1"
-                                                    ]
-                                                }
-                                            ],
-                                            "endpoint": {
-                                                "url": "https://up-sso.{Region}.{PartitionResult#dnsSuffix}/identitystore/",
-                                                "properties": {},
-                                                "headers": {}
-                                            },
-                                            "type": "endpoint"
-                                        },
-                                        {
-                                            "conditions": [
-                                                {
-                                                    "fn": "stringEquals",
-                                                    "argv": [
-                                                        {
-                                                            "ref": "Region"
-                                                        },
-                                                        "us-west-1"
-                                                    ]
-                                                }
-                                            ],
-                                            "endpoint": {
-                                                "url": "https://up-sso.{Region}.{PartitionResult#dnsSuffix}/identitystore/",
-                                                "properties": {},
-                                                "headers": {}
-                                            },
-                                            "type": "endpoint"
-                                        },
-                                        {
-                                            "conditions": [
-                                                {
-                                                    "fn": "stringEquals",
-                                                    "argv": [
-                                                        {
-                                                            "ref": "Region"
-                                                        },
-                                                        "af-south-1"
-                                                    ]
-                                                }
-                                            ],
-                                            "endpoint": {
-                                                "url": "https://up-sso.{Region}.{PartitionResult#dnsSuffix}/identitystore/",
-                                                "properties": {},
-                                                "headers": {}
-                                            },
-                                            "type": "endpoint"
-                                        },
-                                        {
-                                            "conditions": [
-                                                {
-                                                    "fn": "stringEquals",
-                                                    "argv": [
-                                                        {
-                                                            "ref": "Region"
-                                                        },
-                                                        "ap-east-1"
-                                                    ]
-                                                }
-                                            ],
-                                            "endpoint": {
-                                                "url": "https://up-sso.{Region}.{PartitionResult#dnsSuffix}/identitystore/",
-                                                "properties": {},
-                                                "headers": {}
-                                            },
-                                            "type": "endpoint"
-                                        },
-                                        {
-                                            "conditions": [
-                                                {
-                                                    "fn": "stringEquals",
-                                                    "argv": [
-                                                        {
-                                                            "ref": "Region"
-                                                        },
-                                                        "ap-south-2"
-                                                    ]
-                                                }
-                                            ],
-                                            "endpoint": {
-                                                "url": "https://up-sso.{Region}.{PartitionResult#dnsSuffix}/identitystore/",
-                                                "properties": {},
-                                                "headers": {}
-                                            },
-                                            "type": "endpoint"
-                                        },
-                                        {
-                                            "conditions": [
-                                                {
-                                                    "fn": "stringEquals",
-                                                    "argv": [
-                                                        {
-                                                            "ref": "Region"
-                                                        },
-                                                        "ap-southeast-3"
-                                                    ]
-                                                }
-                                            ],
-                                            "endpoint": {
-                                                "url": "https://up-sso.{Region}.{PartitionResult#dnsSuffix}/identitystore/",
-                                                "properties": {},
-                                                "headers": {}
-                                            },
-                                            "type": "endpoint"
-                                        },
-                                        {
-                                            "conditions": [
-                                                {
-                                                    "fn": "stringEquals",
-                                                    "argv": [
-                                                        {
-                                                            "ref": "Region"
-                                                        },
-                                                        "ap-southeast-4"
-                                                    ]
-                                                }
-                                            ],
-                                            "endpoint": {
-                                                "url": "https://up-sso.{Region}.{PartitionResult#dnsSuffix}/identitystore/",
-                                                "properties": {},
-                                                "headers": {}
-                                            },
-                                            "type": "endpoint"
-                                        },
-                                        {
-                                            "conditions": [
-                                                {
-                                                    "fn": "stringEquals",
-                                                    "argv": [
-                                                        {
-                                                            "ref": "Region"
-                                                        },
-                                                        "ap-south-1"
-                                                    ]
-                                                }
-                                            ],
-                                            "endpoint": {
-                                                "url": "https://up-sso.{Region}.{PartitionResult#dnsSuffix}/identitystore/",
-                                                "properties": {},
-                                                "headers": {}
-                                            },
-                                            "type": "endpoint"
-                                        },
-                                        {
-                                            "conditions": [
-                                                {
-                                                    "fn": "stringEquals",
-                                                    "argv": [
-                                                        {
-                                                            "ref": "Region"
-                                                        },
-                                                        "ap-northeast-3"
-                                                    ]
-                                                }
-                                            ],
-                                            "endpoint": {
-                                                "url": "https://up-sso.{Region}.{PartitionResult#dnsSuffix}/identitystore/",
-                                                "properties": {},
-                                                "headers": {}
-                                            },
-                                            "type": "endpoint"
-                                        },
-                                        {
-                                            "conditions": [
-                                                {
-                                                    "fn": "stringEquals",
-                                                    "argv": [
-                                                        {
-                                                            "ref": "Region"
-                                                        },
-                                                        "ap-northeast-2"
-                                                    ]
-                                                }
-                                            ],
-                                            "endpoint": {
-                                                "url": "https://up-sso.{Region}.{PartitionResult#dnsSuffix}/identitystore/",
-                                                "properties": {},
-                                                "headers": {}
-                                            },
-                                            "type": "endpoint"
-                                        },
-                                        {
-                                            "conditions": [
-                                                {
-                                                    "fn": "stringEquals",
-                                                    "argv": [
-                                                        {
-                                                            "ref": "Region"
-                                                        },
-                                                        "ap-northeast-1"
-                                                    ]
-                                                }
-                                            ],
-                                            "endpoint": {
-                                                "url": "https://up-sso.{Region}.{PartitionResult#dnsSuffix}/identitystore/",
-                                                "properties": {},
-                                                "headers": {}
-                                            },
-                                            "type": "endpoint"
-                                        },
-                                        {
-                                            "conditions": [
-                                                {
-                                                    "fn": "stringEquals",
-                                                    "argv": [
-                                                        {
-                                                            "ref": "Region"
-                                                        },
-                                                        "ca-west-1"
-                                                    ]
-                                                }
-                                            ],
-                                            "endpoint": {
-                                                "url": "https://up-sso.{Region}.{PartitionResult#dnsSuffix}/identitystore/",
-                                                "properties": {},
-                                                "headers": {}
-                                            },
-                                            "type": "endpoint"
-                                        },
-                                        {
-                                            "conditions": [],
-                                            "endpoint": {
-                                                "url": "https://up.sso.{Region}.{PartitionResult#dnsSuffix}/identitystore/",
-                                                "properties": {},
-                                                "headers": {}
-                                            },
-                                            "type": "endpoint"
                                         }
-                                    ]
+                                    ],
+                                    "endpoint": {
+                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "eu-south-2"
+                                            ]
+                                        }
+                                    ],
+                                    "endpoint": {
+                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "eu-north-1"
+                                            ]
+                                        }
+                                    ],
+                                    "endpoint": {
+                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "eu-central-2"
+                                            ]
+                                        }
+                                    ],
+                                    "endpoint": {
+                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "il-central-1"
+                                            ]
+                                        }
+                                    ],
+                                    "endpoint": {
+                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "me-south-1"
+                                            ]
+                                        }
+                                    ],
+                                    "endpoint": {
+                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "me-central-1"
+                                            ]
+                                        }
+                                    ],
+                                    "endpoint": {
+                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "sa-east-1"
+                                            ]
+                                        }
+                                    ],
+                                    "endpoint": {
+                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "us-gov-east-1"
+                                            ]
+                                        }
+                                    ],
+                                    "endpoint": {
+                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "us-gov-west-1"
+                                            ]
+                                        }
+                                    ],
+                                    "endpoint": {
+                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "us-west-1"
+                                            ]
+                                        }
+                                    ],
+                                    "endpoint": {
+                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "af-south-1"
+                                            ]
+                                        }
+                                    ],
+                                    "endpoint": {
+                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "ap-east-1"
+                                            ]
+                                        }
+                                    ],
+                                    "endpoint": {
+                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "ap-south-2"
+                                            ]
+                                        }
+                                    ],
+                                    "endpoint": {
+                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "ap-southeast-3"
+                                            ]
+                                        }
+                                    ],
+                                    "endpoint": {
+                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "ap-southeast-4"
+                                            ]
+                                        }
+                                    ],
+                                    "endpoint": {
+                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "ap-south-1"
+                                            ]
+                                        }
+                                    ],
+                                    "endpoint": {
+                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "ap-northeast-3"
+                                            ]
+                                        }
+                                    ],
+                                    "endpoint": {
+                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "ap-northeast-2"
+                                            ]
+                                        }
+                                    ],
+                                    "endpoint": {
+                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "ap-northeast-1"
+                                            ]
+                                        }
+                                    ],
+                                    "endpoint": {
+                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "ca-west-1"
+                                            ]
+                                        }
+                                    ],
+                                    "endpoint": {
+                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "us-gov-east-1"
+                                            ]
+                                        }
+                                    ],
+                                    "endpoint": {
+                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "us-gov-west-1"
+                                            ]
+                                        }
+                                    ],
+                                    "endpoint": {
+                                        "url": "https://up-sso.{Region}.amazonaws.com/identitystore/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "cn-north-1"
+                                            ]
+                                        }
+                                    ],
+                                    "endpoint": {
+                                        "url": "https://up-sso.{Region}.amazonaws.com.cn/identitystore/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "cn-northwest-1"
+                                            ]
+                                        }
+                                    ],
+                                    "endpoint": {
+                                        "url": "https://up-sso.{Region}.amazonaws.com.cn/identitystore/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "us-isob-east-1"
+                                            ]
+                                        }
+                                    ],
+                                    "error": "Invalid Configuration: Region is not supported",
+                                    "type": "error"
+                                },
+                                {
+                                    "conditions": [
+                                        {
+                                            "fn": "stringEquals",
+                                            "argv": [
+                                                {
+                                                    "ref": "Region"
+                                                },
+                                                "us-iso-east-1"
+                                            ]
+                                        }
+                                    ],
+                                    "error": "Invalid Configuration: Region is not supported",
+                                    "type": "error"
+                                },
+                                {
+                                    "conditions": [],
+                                    "endpoint": {
+                                        "url": "https://up.sso.{Region}.amazonaws.com/identitystore/",
+                                        "properties": {},
+                                        "headers": {}
+                                    },
+                                    "type": "endpoint"
                                 }
                             ]
                         },
@@ -2230,9 +900,7 @@
                         {
                             "documentation": "For region us-east-1 with FIPS enabled and DualStack enabled",
                             "expect": {
-                                "endpoint": {
-                                    "url": "https://up.sso-fips.us-east-1.api.aws/identitystore/"
-                                }
+                                "error": "Invalid Configuration: DualStack or FIPS is not supported"
                             },
                             "params": {
                                 "Region": "us-east-1",
@@ -2243,9 +911,7 @@
                         {
                             "documentation": "For region us-east-1 with FIPS enabled and DualStack disabled",
                             "expect": {
-                                "endpoint": {
-                                    "url": "https://up.sso-fips.us-east-1.amazonaws.com/identitystore/"
-                                }
+                                "error": "Invalid Configuration: FIPS is not supported"
                             },
                             "params": {
                                 "Region": "us-east-1",
@@ -2256,9 +922,7 @@
                         {
                             "documentation": "For region us-east-1 with FIPS disabled and DualStack enabled",
                             "expect": {
-                                "endpoint": {
-                                    "url": "https://up.sso.us-east-1.api.aws/identitystore/"
-                                }
+                                "error": "Invalid Configuration: DualStack is not supported"
                             },
                             "params": {
                                 "Region": "us-east-1",
@@ -2269,9 +933,7 @@
                         {
                             "documentation": "For region cn-north-1 with FIPS enabled and DualStack enabled",
                             "expect": {
-                                "endpoint": {
-                                    "url": "https://up.sso-fips.cn-north-1.api.amazonwebservices.com.cn/identitystore/"
-                                }
+                                "error": "Invalid Configuration: DualStack or FIPS is not supported"
                             },
                             "params": {
                                 "Region": "cn-north-1",
@@ -2282,9 +944,7 @@
                         {
                             "documentation": "For region cn-north-1 with FIPS enabled and DualStack disabled",
                             "expect": {
-                                "endpoint": {
-                                    "url": "https://up.sso-fips.cn-north-1.amazonaws.com.cn/identitystore/"
-                                }
+                                "error": "Invalid Configuration: FIPS is not supported"
                             },
                             "params": {
                                 "Region": "cn-north-1",
@@ -2295,9 +955,7 @@
                         {
                             "documentation": "For region cn-north-1 with FIPS disabled and DualStack enabled",
                             "expect": {
-                                "endpoint": {
-                                    "url": "https://up.sso.cn-north-1.api.amazonwebservices.com.cn/identitystore/"
-                                }
+                                "error": "Invalid Configuration: DualStack is not supported"
                             },
                             "params": {
                                 "Region": "cn-north-1",
@@ -2309,7 +967,7 @@
                             "documentation": "For region cn-north-1 with FIPS disabled and DualStack disabled",
                             "expect": {
                                 "endpoint": {
-                                    "url": "https://up.sso.cn-north-1.amazonaws.com.cn/identitystore/"
+                                    "url": "https://up-sso.cn-north-1.amazonaws.com.cn/identitystore/"
                                 }
                             },
                             "params": {
@@ -2334,9 +992,7 @@
                         {
                             "documentation": "For region us-gov-east-1 with FIPS enabled and DualStack disabled",
                             "expect": {
-                                "endpoint": {
-                                    "url": "https://up-sso.us-gov-east-1.amazonaws.com/identitystore/"
-                                }
+                                "error": "Invalid Configuration: FIPS is not supported"
                             },
                             "params": {
                                 "Region": "us-gov-east-1",
@@ -2360,9 +1016,7 @@
                         {
                             "documentation": "For region us-gov-west-1 with FIPS enabled and DualStack disabled",
                             "expect": {
-                                "endpoint": {
-                                    "url": "https://up-sso.us-gov-west-1.amazonaws.com/identitystore/"
-                                }
+                                "error": "Invalid Configuration: FIPS is not supported"
                             },
                             "params": {
                                 "Region": "us-gov-west-1",
@@ -2373,9 +1027,7 @@
                         {
                             "documentation": "For region us-gov-east-1 with FIPS enabled and DualStack enabled",
                             "expect": {
-                                "endpoint": {
-                                    "url": "https://up-sso-fips.us-gov-east-1.api.aws/identitystore/"
-                                }
+                                "error": "Invalid Configuration: DualStack or FIPS is not supported"
                             },
                             "params": {
                                 "Region": "us-gov-east-1",
@@ -2386,9 +1038,7 @@
                         {
                             "documentation": "For region us-gov-east-1 with FIPS disabled and DualStack enabled",
                             "expect": {
-                                "endpoint": {
-                                    "url": "https://up-sso.us-gov-east-1.api.aws/identitystore/"
-                                }
+                                "error": "Invalid Configuration: DualStack is not supported"
                             },
                             "params": {
                                 "Region": "us-gov-east-1",
@@ -2399,7 +1049,7 @@
                         {
                             "documentation": "For region us-iso-east-1 with FIPS enabled and DualStack enabled",
                             "expect": {
-                                "error": "FIPS and DualStack are enabled, but this partition does not support one or both"
+                                "error": "Invalid Configuration: DualStack or FIPS is not supported"
                             },
                             "params": {
                                 "Region": "us-iso-east-1",
@@ -2410,9 +1060,7 @@
                         {
                             "documentation": "For region us-iso-east-1 with FIPS enabled and DualStack disabled",
                             "expect": {
-                                "endpoint": {
-                                    "url": "https://up.sso-fips.us-iso-east-1.c2s.ic.gov/identitystore/"
-                                }
+                                "error": "Invalid Configuration: FIPS is not supported"
                             },
                             "params": {
                                 "Region": "us-iso-east-1",
@@ -2423,7 +1071,7 @@
                         {
                             "documentation": "For region us-iso-east-1 with FIPS disabled and DualStack enabled",
                             "expect": {
-                                "error": "DualStack is enabled but this partition does not support DualStack"
+                                "error": "Invalid Configuration: DualStack is not supported"
                             },
                             "params": {
                                 "Region": "us-iso-east-1",
@@ -2434,9 +1082,7 @@
                         {
                             "documentation": "For region us-iso-east-1 with FIPS disabled and DualStack disabled",
                             "expect": {
-                                "endpoint": {
-                                    "url": "https://up.sso.us-iso-east-1.c2s.ic.gov/identitystore/"
-                                }
+                                "error": "Invalid Configuration: Region is not supported"
                             },
                             "params": {
                                 "Region": "us-iso-east-1",
@@ -2447,7 +1093,7 @@
                         {
                             "documentation": "For region us-isob-east-1 with FIPS enabled and DualStack enabled",
                             "expect": {
-                                "error": "FIPS and DualStack are enabled, but this partition does not support one or both"
+                                "error": "Invalid Configuration: DualStack or FIPS is not supported"
                             },
                             "params": {
                                 "Region": "us-isob-east-1",
@@ -2458,9 +1104,7 @@
                         {
                             "documentation": "For region us-isob-east-1 with FIPS enabled and DualStack disabled",
                             "expect": {
-                                "endpoint": {
-                                    "url": "https://up.sso-fips.us-isob-east-1.sc2s.sgov.gov/identitystore/"
-                                }
+                                "error": "Invalid Configuration: FIPS is not supported"
                             },
                             "params": {
                                 "Region": "us-isob-east-1",
@@ -2471,7 +1115,7 @@
                         {
                             "documentation": "For region us-isob-east-1 with FIPS disabled and DualStack enabled",
                             "expect": {
-                                "error": "DualStack is enabled but this partition does not support DualStack"
+                                "error": "Invalid Configuration: DualStack is not supported"
                             },
                             "params": {
                                 "Region": "us-isob-east-1",
@@ -2482,9 +1126,7 @@
                         {
                             "documentation": "For region us-isob-east-1 with FIPS disabled and DualStack disabled",
                             "expect": {
-                                "endpoint": {
-                                    "url": "https://up.sso.us-isob-east-1.sc2s.sgov.gov/identitystore/"
-                                }
+                                "error": "Invalid Configuration: Region is not supported"
                             },
                             "params": {
                                 "Region": "us-isob-east-1",
@@ -2495,9 +1137,7 @@
                         {
                             "documentation": "For custom endpoint with region set and fips disabled and dualstack disabled",
                             "expect": {
-                                "endpoint": {
-                                    "url": "https://example.com"
-                                }
+                                "error": "Invalid Configuration: Custom endpoint is not supported"
                             },
                             "params": {
                                 "Region": "us-east-1",
@@ -2509,9 +1149,7 @@
                         {
                             "documentation": "For custom endpoint with region not set and fips disabled and dualstack disabled",
                             "expect": {
-                                "endpoint": {
-                                    "url": "https://example.com"
-                                }
+                                "error": "Invalid Configuration: Custom endpoint is not supported"
                             },
                             "params": {
                                 "UseFIPS": false,
@@ -2522,7 +1160,7 @@
                         {
                             "documentation": "For custom endpoint with fips enabled and dualstack disabled",
                             "expect": {
-                                "error": "Invalid Configuration: FIPS and custom endpoint are not supported"
+                                "error": "Invalid Configuration: Custom endpoint or FIPS is not supported"
                             },
                             "params": {
                                 "Region": "us-east-1",
@@ -2534,7 +1172,7 @@
                         {
                             "documentation": "For custom endpoint with fips disabled and dualstack enabled",
                             "expect": {
-                                "error": "Invalid Configuration: Dualstack and custom endpoint are not supported"
+                                "error": "Invalid Configuration: Custom endpoint or DualStack is not supported"
                             },
                             "params": {
                                 "Region": "us-east-1",
