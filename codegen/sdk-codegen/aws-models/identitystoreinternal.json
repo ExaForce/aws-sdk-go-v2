@@ -7,6 +7,12 @@
             "operations": [
                 {
                     "target": "com.amazonaws.identitystoreinternal#SearchUsers"
+                },
+                {
+                    "target": "com.amazonaws.identitystoreinternal#ListProvisioningTenants"
+                },
+                {
+                    "target": "com.amazonaws.identitystoreinternal#ListBearerTokens"
                 }
             ],
             "resources": [
@@ -1227,6 +1233,43 @@
                 "smithy.api#documentation": "<p>The value of the attribute. This is a <code>Document</code> type.\n         This type is not supported by Java V1, Go V1, and older versions of the CLI.</p>"
             }
         },
+        "com.amazonaws.identitystoreinternal#BearerToken": {
+            "type": "structure",
+            "members": {
+                "TokenId": {
+                    "target": "com.amazonaws.identitystoreinternal#String",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The bearer token identifier.</p>"
+                    }
+                },
+                "Token": {
+                    "target": "com.amazonaws.identitystoreinternal#SensitiveStringType",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The bearer token.</p>"
+                    }
+                },
+                "CreationTime": {
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The time of creation of the bearer token.</p>",
+                        "smithy.api#timestampFormat": "epoch-seconds"
+                    }
+                },
+                "ExpirationTime": {
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The time of expiration of the bearer token.</p>",
+                        "smithy.api#timestampFormat": "epoch-seconds"
+                    }
+                }
+            }
+        },
+        "com.amazonaws.identitystoreinternal#BearerTokens": {
+            "type": "list",
+            "member": {
+                "target": "com.amazonaws.identitystoreinternal#BearerToken"
+            }
+        },
         "com.amazonaws.identitystoreinternal#ExceptionMessage": {
             "type": "string"
         },
@@ -1302,6 +1345,95 @@
                 "smithy.api#retryable": {}
             }
         },
+        "com.amazonaws.identitystoreinternal#ListBearerTokens": {
+            "type": "operation",
+            "input": {
+                "target": "com.amazonaws.identitystoreinternal#ListBearerTokensRequest"
+            },
+            "output": {
+                "target": "com.amazonaws.identitystoreinternal#ListBearerTokensResponse"
+            },
+            "errors": [
+                {
+                    "target": "com.amazonaws.identitystoreinternal#ResourceNotFoundException"
+                },
+                {
+                    "target": "com.amazonaws.identitystoreinternal#ValidationException"
+                }
+            ],
+            "traits": {
+                "smithy.api#documentation": "<p>List all bearer tokens for a provisioning tenant in the identity store.</p>",
+                "smithy.api#readonly": {}
+            }
+        },
+        "com.amazonaws.identitystoreinternal#ListBearerTokensRequest": {
+            "type": "structure",
+            "members": {
+                "IdentityStoreId": {
+                    "target": "com.amazonaws.identitystoreinternal#IdentityStoreId",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The globally unique identifier for the identity store, such as\n         <code>d-1234567890</code>. In this example, <code>d-</code> is a fixed prefix, and\n            <code>1234567890</code> is a randomly generated string that contains numbers and lower\n         case letters. This value is generated at the time that a new identity store is\n         created.</p>",
+                        "smithy.api#required": {}
+                    }
+                },
+                "TenantId": {
+                    "target": "com.amazonaws.identitystoreinternal#String",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The provisioning tenant identifier.</p>",
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "com.amazonaws.identitystoreinternal#ListBearerTokensResponse": {
+            "type": "structure",
+            "members": {
+                "BearerTokens": {
+                    "target": "com.amazonaws.identitystoreinternal#BearerTokens"
+                }
+            }
+        },
+        "com.amazonaws.identitystoreinternal#ListProvisioningTenants": {
+            "type": "operation",
+            "input": {
+                "target": "com.amazonaws.identitystoreinternal#ListProvisioningTenantsRequest"
+            },
+            "output": {
+                "target": "com.amazonaws.identitystoreinternal#ListProvisioningTenantsResponse"
+            },
+            "errors": [
+                {
+                    "target": "com.amazonaws.identitystoreinternal#ResourceNotFoundException"
+                },
+                {
+                    "target": "com.amazonaws.identitystoreinternal#ValidationException"
+                }
+            ],
+            "traits": {
+                "smithy.api#documentation": "<p>List all provisioning tenants in the identity store.</p>",
+                "smithy.api#readonly": {}
+            }
+        },
+        "com.amazonaws.identitystoreinternal#ListProvisioningTenantsRequest": {
+            "type": "structure",
+            "members": {
+                "IdentityStoreId": {
+                    "target": "com.amazonaws.identitystoreinternal#IdentityStoreId",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The globally unique identifier for the identity store, such as\n         <code>d-1234567890</code>. In this example, <code>d-</code> is a fixed prefix, and\n            <code>1234567890</code> is a randomly generated string that contains numbers and lower\n         case letters. This value is generated at the time that a new identity store is\n         created.</p>",
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "com.amazonaws.identitystoreinternal#ListProvisioningTenantsResponse": {
+            "type": "structure",
+            "members": {
+                "ProvisioningTenants": {
+                    "target": "com.amazonaws.identitystoreinternal#ProvisioningTenants"
+                }
+            }
+        },
         "com.amazonaws.identitystoreinternal#MaxResults": {
             "type": "integer",
             "traits": {
@@ -1311,38 +1443,34 @@
                 }
             }
         },
-        "com.amazonaws.identitystoreinternal#UserInfo": {
+        "com.amazonaws.identitystoreinternal#ProvisioningTenant": {
             "type": "structure",
             "members": {
-                "CreatedAt": {
-                    "target": "smithy.api#Timestamp",
-                    "traits": {
-                        "smithy.api#documentation": "<p>The time when the user was created.</p>",
-                        "smithy.api#timestampFormat": "epoch-seconds"
-                    }
-                },
-                "UpdatedAt": {
-                    "target": "smithy.api#Timestamp",
-                    "traits": {
-                        "smithy.api#documentation": "<p>The time when the user was updated.</p>",
-                        "smithy.api#timestampFormat": "epoch-seconds"
-                    }
-                },
-                "CreatedBy": {
+                "TenantId": {
                     "target": "com.amazonaws.identitystoreinternal#String",
                     "traits": {
-                        "smithy.api#documentation": "<p>Entity that created the user.</p>"
+                        "smithy.api#documentation": "<p>The provisioning tenant identifier.</p>"
                     }
                 },
-                "UpdatedBy": {
-                    "target": "com.amazonaws.identitystoreinternal#String",
+                "ScimEndpoint": {
+                    "target": "com.amazonaws.identitystoreinternal#ScimEndpoint",
                     "traits": {
-                        "smithy.api#documentation": "<p>Entity that updated the user.</p>"
+                        "smithy.api#documentation": "<p>The provisioning tenant SCIM endpoint.</p>"
+                    }
+                },
+                "CreationTime": {
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The time when the provisioning tenant was created.</p>",
+                        "smithy.api#timestampFormat": "epoch-seconds"
                     }
                 }
-            },
-            "traits": {
-                "smithy.api#documentation": "<p>Metadata information about a user.</p>"
+            }
+        },
+        "com.amazonaws.identitystoreinternal#ProvisioningTenants": {
+            "type": "list",
+            "member": {
+                "target": "com.amazonaws.identitystoreinternal#ProvisioningTenant"
             }
         },
         "com.amazonaws.identitystoreinternal#NextToken": {
@@ -1433,6 +1561,17 @@
             "type": "integer",
             "traits": {
                 "smithy.api#default": 0
+            }
+        },
+        "com.amazonaws.identitystoreinternal#ScimEndpoint": {
+            "type": "string",
+            "traits": {
+                "smithy.api#length": {
+                    "min": 1,
+                    "max": 100
+                },
+                "smithy.api#pattern": "^(?!(?i)(arn|aws):)[\\p{L}\\p{M}\\p{S}\\p{N}\\p{P}]+$",
+                "smithy.api#sensitive": {}
             }
         },
         "com.amazonaws.identitystoreinternal#SearchUsers": {
@@ -1631,6 +1770,40 @@
                 "ComplexListValue": {
                     "target": "com.amazonaws.identitystoreinternal#UserAttributesComplexListValue"
                 }
+            }
+        },
+        "com.amazonaws.identitystoreinternal#UserInfo": {
+            "type": "structure",
+            "members": {
+                "CreatedAt": {
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The time when the user was created.</p>",
+                        "smithy.api#timestampFormat": "epoch-seconds"
+                    }
+                },
+                "UpdatedAt": {
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The time when the user was updated.</p>",
+                        "smithy.api#timestampFormat": "epoch-seconds"
+                    }
+                },
+                "CreatedBy": {
+                    "target": "com.amazonaws.identitystoreinternal#String",
+                    "traits": {
+                        "smithy.api#documentation": "<p>Entity that created the user.</p>"
+                    }
+                },
+                "UpdatedBy": {
+                    "target": "com.amazonaws.identitystoreinternal#String",
+                    "traits": {
+                        "smithy.api#documentation": "<p>Entity that updated the user.</p>"
+                    }
+                }
+            },
+            "traits": {
+                "smithy.api#documentation": "<p>Metadata information about a user.</p>"
             }
         },
         "com.amazonaws.identitystoreinternal#UserName": {

@@ -10,6 +10,46 @@ import (
 	"github.com/aws/smithy-go/middleware"
 )
 
+type validateOpListBearerTokens struct {
+}
+
+func (*validateOpListBearerTokens) ID() string {
+	return "OperationInputValidation"
+}
+
+func (m *validateOpListBearerTokens) HandleInitialize(ctx context.Context, in middleware.InitializeInput, next middleware.InitializeHandler) (
+	out middleware.InitializeOutput, metadata middleware.Metadata, err error,
+) {
+	input, ok := in.Parameters.(*ListBearerTokensInput)
+	if !ok {
+		return out, metadata, fmt.Errorf("unknown input parameters type %T", in.Parameters)
+	}
+	if err := validateOpListBearerTokensInput(input); err != nil {
+		return out, metadata, err
+	}
+	return next.HandleInitialize(ctx, in)
+}
+
+type validateOpListProvisioningTenants struct {
+}
+
+func (*validateOpListProvisioningTenants) ID() string {
+	return "OperationInputValidation"
+}
+
+func (m *validateOpListProvisioningTenants) HandleInitialize(ctx context.Context, in middleware.InitializeInput, next middleware.InitializeHandler) (
+	out middleware.InitializeOutput, metadata middleware.Metadata, err error,
+) {
+	input, ok := in.Parameters.(*ListProvisioningTenantsInput)
+	if !ok {
+		return out, metadata, fmt.Errorf("unknown input parameters type %T", in.Parameters)
+	}
+	if err := validateOpListProvisioningTenantsInput(input); err != nil {
+		return out, metadata, err
+	}
+	return next.HandleInitialize(ctx, in)
+}
+
 type validateOpSearchUsers struct {
 }
 
@@ -28,6 +68,14 @@ func (m *validateOpSearchUsers) HandleInitialize(ctx context.Context, in middlew
 		return out, metadata, err
 	}
 	return next.HandleInitialize(ctx, in)
+}
+
+func addOpListBearerTokensValidationMiddleware(stack *middleware.Stack) error {
+	return stack.Initialize.Add(&validateOpListBearerTokens{}, middleware.After)
+}
+
+func addOpListProvisioningTenantsValidationMiddleware(stack *middleware.Stack) error {
+	return stack.Initialize.Add(&validateOpListProvisioningTenants{}, middleware.After)
 }
 
 func addOpSearchUsersValidationMiddleware(stack *middleware.Stack) error {
@@ -61,6 +109,39 @@ func validateFilters(v []types.Filter) error {
 		if err := validateFilter(&v[i]); err != nil {
 			invalidParams.AddNested(fmt.Sprintf("[%d]", i), err.(smithy.InvalidParamsError))
 		}
+	}
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	} else {
+		return nil
+	}
+}
+
+func validateOpListBearerTokensInput(v *ListBearerTokensInput) error {
+	if v == nil {
+		return nil
+	}
+	invalidParams := smithy.InvalidParamsError{Context: "ListBearerTokensInput"}
+	if v.IdentityStoreId == nil {
+		invalidParams.Add(smithy.NewErrParamRequired("IdentityStoreId"))
+	}
+	if v.TenantId == nil {
+		invalidParams.Add(smithy.NewErrParamRequired("TenantId"))
+	}
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	} else {
+		return nil
+	}
+}
+
+func validateOpListProvisioningTenantsInput(v *ListProvisioningTenantsInput) error {
+	if v == nil {
+		return nil
+	}
+	invalidParams := smithy.InvalidParamsError{Context: "ListProvisioningTenantsInput"}
+	if v.IdentityStoreId == nil {
+		invalidParams.Add(smithy.NewErrParamRequired("IdentityStoreId"))
 	}
 	if invalidParams.Len() > 0 {
 		return invalidParams

@@ -7,6 +7,23 @@ import (
 	"time"
 )
 
+type BearerToken struct {
+
+	// The time of creation of the bearer token.
+	CreationTime *time.Time
+
+	// The time of expiration of the bearer token.
+	ExpirationTime *time.Time
+
+	// The bearer token.
+	Token *string
+
+	// The bearer token identifier.
+	TokenId *string
+
+	noSmithyDocumentSerde
+}
+
 // A query filter used by SearchUsers . This filter object provides the attribute
 // name and attribute value to search users or groups.
 type Filter struct {
@@ -23,6 +40,20 @@ type Filter struct {
 	//
 	// This member is required.
 	AttributeValue *string
+
+	noSmithyDocumentSerde
+}
+
+type ProvisioningTenant struct {
+
+	// The time when the provisioning tenant was created.
+	CreationTime *time.Time
+
+	// The provisioning tenant SCIM endpoint.
+	ScimEndpoint *string
+
+	// The provisioning tenant identifier.
+	TenantId *string
 
 	noSmithyDocumentSerde
 }
