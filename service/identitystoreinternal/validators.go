@@ -50,6 +50,26 @@ func (m *validateOpListProvisioningTenants) HandleInitialize(ctx context.Context
 	return next.HandleInitialize(ctx, in)
 }
 
+type validateOpSearchGroups struct {
+}
+
+func (*validateOpSearchGroups) ID() string {
+	return "OperationInputValidation"
+}
+
+func (m *validateOpSearchGroups) HandleInitialize(ctx context.Context, in middleware.InitializeInput, next middleware.InitializeHandler) (
+	out middleware.InitializeOutput, metadata middleware.Metadata, err error,
+) {
+	input, ok := in.Parameters.(*SearchGroupsInput)
+	if !ok {
+		return out, metadata, fmt.Errorf("unknown input parameters type %T", in.Parameters)
+	}
+	if err := validateOpSearchGroupsInput(input); err != nil {
+		return out, metadata, err
+	}
+	return next.HandleInitialize(ctx, in)
+}
+
 type validateOpSearchUsers struct {
 }
 
@@ -76,6 +96,10 @@ func addOpListBearerTokensValidationMiddleware(stack *middleware.Stack) error {
 
 func addOpListProvisioningTenantsValidationMiddleware(stack *middleware.Stack) error {
 	return stack.Initialize.Add(&validateOpListProvisioningTenants{}, middleware.After)
+}
+
+func addOpSearchGroupsValidationMiddleware(stack *middleware.Stack) error {
+	return stack.Initialize.Add(&validateOpSearchGroups{}, middleware.After)
 }
 
 func addOpSearchUsersValidationMiddleware(stack *middleware.Stack) error {
@@ -142,6 +166,26 @@ func validateOpListProvisioningTenantsInput(v *ListProvisioningTenantsInput) err
 	invalidParams := smithy.InvalidParamsError{Context: "ListProvisioningTenantsInput"}
 	if v.IdentityStoreId == nil {
 		invalidParams.Add(smithy.NewErrParamRequired("IdentityStoreId"))
+	}
+	if invalidParams.Len() > 0 {
+		return invalidParams
+	} else {
+		return nil
+	}
+}
+
+func validateOpSearchGroupsInput(v *SearchGroupsInput) error {
+	if v == nil {
+		return nil
+	}
+	invalidParams := smithy.InvalidParamsError{Context: "SearchGroupsInput"}
+	if v.IdentityStoreId == nil {
+		invalidParams.Add(smithy.NewErrParamRequired("IdentityStoreId"))
+	}
+	if v.Filters != nil {
+		if err := validateFilters(v.Filters); err != nil {
+			invalidParams.AddNested("Filters", err.(smithy.InvalidParamsError))
+		}
 	}
 	if invalidParams.Len() > 0 {
 		return invalidParams

@@ -7,6 +7,48 @@ import (
 	"time"
 )
 
+// The following types satisfy this interface:
+//
+//	AttributesValueMemberBooleanValue
+//	AttributesValueMemberComplexListValue
+//	AttributesValueMemberComplexValue
+//	AttributesValueMemberStringValue
+type AttributesValue interface {
+	isAttributesValue()
+}
+
+type AttributesValueMemberBooleanValue struct {
+	Value bool
+
+	noSmithyDocumentSerde
+}
+
+func (*AttributesValueMemberBooleanValue) isAttributesValue() {}
+
+type AttributesValueMemberComplexListValue struct {
+	Value []map[string]AttributesValue
+
+	noSmithyDocumentSerde
+}
+
+func (*AttributesValueMemberComplexListValue) isAttributesValue() {}
+
+type AttributesValueMemberComplexValue struct {
+	Value map[string]AttributesValue
+
+	noSmithyDocumentSerde
+}
+
+func (*AttributesValueMemberComplexValue) isAttributesValue() {}
+
+type AttributesValueMemberStringValue struct {
+	Value string
+
+	noSmithyDocumentSerde
+}
+
+func (*AttributesValueMemberStringValue) isAttributesValue() {}
+
 type BearerToken struct {
 
 	// The time of creation of the bearer token.
@@ -44,6 +86,48 @@ type Filter struct {
 	noSmithyDocumentSerde
 }
 
+// A group object that contains the metadata and attributes for a specified group.
+type Group struct {
+
+	// The identifier for a group in the identity store.
+	//
+	// This member is required.
+	GroupId *string
+
+	// The display name value for the group. The length limit is 1,024 characters.
+	// This value can consist of letters, accented characters, symbols, numbers,
+	// punctuation, tab, new line, carriage return, space, and nonbreaking space in
+	// this attribute. This value is specified at the time the group is created and
+	// stored as an attribute of the group object in the identity store.
+	DisplayName *string
+
+	// Attributes of a group.
+	GroupAttributes map[string]AttributesValue
+
+	// Metadata information for a group.
+	Meta *ObjectMeta
+
+	noSmithyDocumentSerde
+}
+
+// Metadata information about an object.
+type ObjectMeta struct {
+
+	// The time when the object was created.
+	CreatedAt *time.Time
+
+	// Entity that created the object.
+	CreatedBy *string
+
+	// The time when the object was updated.
+	UpdatedAt *time.Time
+
+	// Entity that updated the object.
+	UpdatedBy *string
+
+	noSmithyDocumentSerde
+}
+
 type ProvisioningTenant struct {
 
 	// The time when the provisioning tenant was created.
@@ -70,76 +154,16 @@ type User struct {
 	Active bool
 
 	// Metadata information for a user.
-	Meta *UserInfo
+	Meta *ObjectMeta
 
 	// Attributes of a user.
-	UserAttributes map[string]UserAttributesValue
+	UserAttributes map[string]AttributesValue
 
 	// A unique string used to identify the user. The length limit is 128 characters.
 	// This value can consist of letters, accented characters, symbols, numbers, and
 	// punctuation. This value is specified at the time the user is created and stored
 	// as an attribute of the user object in the identity store.
 	UserName *string
-
-	noSmithyDocumentSerde
-}
-
-// The following types satisfy this interface:
-//
-//	UserAttributesValueMemberBooleanValue
-//	UserAttributesValueMemberComplexListValue
-//	UserAttributesValueMemberComplexValue
-//	UserAttributesValueMemberStringValue
-type UserAttributesValue interface {
-	isUserAttributesValue()
-}
-
-type UserAttributesValueMemberBooleanValue struct {
-	Value bool
-
-	noSmithyDocumentSerde
-}
-
-func (*UserAttributesValueMemberBooleanValue) isUserAttributesValue() {}
-
-type UserAttributesValueMemberComplexListValue struct {
-	Value []map[string]UserAttributesValue
-
-	noSmithyDocumentSerde
-}
-
-func (*UserAttributesValueMemberComplexListValue) isUserAttributesValue() {}
-
-type UserAttributesValueMemberComplexValue struct {
-	Value map[string]UserAttributesValue
-
-	noSmithyDocumentSerde
-}
-
-func (*UserAttributesValueMemberComplexValue) isUserAttributesValue() {}
-
-type UserAttributesValueMemberStringValue struct {
-	Value string
-
-	noSmithyDocumentSerde
-}
-
-func (*UserAttributesValueMemberStringValue) isUserAttributesValue() {}
-
-// Metadata information about a user.
-type UserInfo struct {
-
-	// The time when the user was created.
-	CreatedAt *time.Time
-
-	// Entity that created the user.
-	CreatedBy *string
-
-	// The time when the user was updated.
-	UpdatedAt *time.Time
-
-	// Entity that updated the user.
-	UpdatedBy *string
 
 	noSmithyDocumentSerde
 }
@@ -155,4 +179,4 @@ type UnknownUnionMember struct {
 	noSmithyDocumentSerde
 }
 
-func (*UnknownUnionMember) isUserAttributesValue() {}
+func (*UnknownUnionMember) isAttributesValue() {}

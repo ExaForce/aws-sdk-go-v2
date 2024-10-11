@@ -86,6 +86,18 @@ func TestCheckSnapshot_ListProvisioningTenants(t *testing.T) {
 	}
 }
 
+func TestCheckSnapshot_SearchGroups(t *testing.T) {
+	svc := New(Options{})
+	_, err := svc.SearchGroups(context.Background(), nil, func(o *Options) {
+		o.APIOptions = append(o.APIOptions, func(stack *middleware.Stack) error {
+			return testSnapshot(stack, "SearchGroups")
+		})
+	})
+	if _, ok := err.(snapshotOK); !ok && err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestCheckSnapshot_SearchUsers(t *testing.T) {
 	svc := New(Options{})
 	_, err := svc.SearchUsers(context.Background(), nil, func(o *Options) {
@@ -114,6 +126,18 @@ func TestUpdateSnapshot_ListProvisioningTenants(t *testing.T) {
 	_, err := svc.ListProvisioningTenants(context.Background(), nil, func(o *Options) {
 		o.APIOptions = append(o.APIOptions, func(stack *middleware.Stack) error {
 			return updateSnapshot(stack, "ListProvisioningTenants")
+		})
+	})
+	if _, ok := err.(snapshotOK); !ok && err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestUpdateSnapshot_SearchGroups(t *testing.T) {
+	svc := New(Options{})
+	_, err := svc.SearchGroups(context.Background(), nil, func(o *Options) {
+		o.APIOptions = append(o.APIOptions, func(stack *middleware.Stack) error {
+			return updateSnapshot(stack, "SearchGroups")
 		})
 	})
 	if _, ok := err.(snapshotOK); !ok && err != nil {
