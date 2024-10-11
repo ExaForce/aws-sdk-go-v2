@@ -7,20 +7,20 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/identitystoreinternal/types"
 )
 
-func ExampleUserAttributesValue_outputUsage() {
-	var union types.UserAttributesValue
+func ExampleAttributesValue_outputUsage() {
+	var union types.AttributesValue
 	// type switches can be used to check the union value
 	switch v := union.(type) {
-	case *types.UserAttributesValueMemberBooleanValue:
+	case *types.AttributesValueMemberBooleanValue:
 		_ = v.Value // Value is bool
 
-	case *types.UserAttributesValueMemberComplexListValue:
-		_ = v.Value // Value is []map[string]types.UserAttributesValue
+	case *types.AttributesValueMemberComplexListValue:
+		_ = v.Value // Value is []map[string]types.AttributesValue
 
-	case *types.UserAttributesValueMemberComplexValue:
-		_ = v.Value // Value is map[string]types.UserAttributesValue
+	case *types.AttributesValueMemberComplexValue:
+		_ = v.Value // Value is map[string]types.AttributesValue
 
-	case *types.UserAttributesValueMemberStringValue:
+	case *types.AttributesValueMemberStringValue:
 		_ = v.Value // Value is string
 
 	case *types.UnknownUnionMember:
@@ -32,7 +32,7 @@ func ExampleUserAttributesValue_outputUsage() {
 	}
 }
 
-var _ []map[string]types.UserAttributesValue
+var _ []map[string]types.AttributesValue
 var _ *string
 var _ bool
-var _ map[string]types.UserAttributesValue
+var _ map[string]types.AttributesValue

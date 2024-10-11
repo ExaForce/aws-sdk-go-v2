@@ -9,6 +9,9 @@
                     "target": "com.amazonaws.identitystoreinternal#SearchUsers"
                 },
                 {
+                    "target": "com.amazonaws.identitystoreinternal#SearchGroups"
+                },
+                {
                     "target": "com.amazonaws.identitystoreinternal#ListProvisioningTenants"
                 },
                 {
@@ -18,6 +21,9 @@
             "resources": [
                 {
                     "target": "com.amazonaws.identitystoreinternal#UserResource"
+                },
+                {
+                    "target": "com.amazonaws.identitystoreinternal#GroupResource"
                 }
             ],
             "errors": [
@@ -1217,6 +1223,38 @@
                 "smithy.api#httpError": 403
             }
         },
+        "com.amazonaws.identitystoreinternal#Attributes": {
+            "type": "map",
+            "key": {
+                "target": "com.amazonaws.identitystoreinternal#String"
+            },
+            "value": {
+                "target": "com.amazonaws.identitystoreinternal#AttributesValue"
+            }
+        },
+        "com.amazonaws.identitystoreinternal#AttributesComplexListValue": {
+            "type": "list",
+            "member": {
+                "target": "com.amazonaws.identitystoreinternal#Attributes"
+            }
+        },
+        "com.amazonaws.identitystoreinternal#AttributesValue": {
+            "type": "union",
+            "members": {
+                "StringValue": {
+                    "target": "com.amazonaws.identitystoreinternal#SensitiveStringType"
+                },
+                "BooleanValue": {
+                    "target": "com.amazonaws.identitystoreinternal#SensitiveBooleanType"
+                },
+                "ComplexValue": {
+                    "target": "com.amazonaws.identitystoreinternal#Attributes"
+                },
+                "ComplexListValue": {
+                    "target": "com.amazonaws.identitystoreinternal#AttributesComplexListValue"
+                }
+            }
+        },
         "com.amazonaws.identitystoreinternal#AttributePath": {
             "type": "string",
             "traits": {
@@ -1305,6 +1343,73 @@
                     "min": 0,
                     "max": 1
                 }
+            }
+        },
+        "com.amazonaws.identitystoreinternal#Group": {
+            "type": "structure",
+            "members": {
+                "DisplayName": {
+                    "target": "com.amazonaws.identitystoreinternal#GroupDisplayName",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The display name value for the group. The length limit is 1,024 characters. This value\n         can consist of letters, accented characters, symbols, numbers, punctuation, tab, new line,\n         carriage return, space, and nonbreaking space in this attribute. This value is specified at\n         the time the group is created and stored as an attribute of the group object in the\n         identity store.</p>"
+                    }
+                },
+                "GroupId": {
+                    "target": "com.amazonaws.identitystoreinternal#ResourceId",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The identifier for a group in the identity store.</p>",
+                        "smithy.api#required": {}
+                    }
+                },
+                "Meta": {
+                    "target": "com.amazonaws.identitystoreinternal#ObjectMeta",
+                    "traits": {
+                        "smithy.api#documentation": "<p>Metadata information for a group.</p>"
+                    }
+                },
+                "GroupAttributes": {
+                    "target": "com.amazonaws.identitystoreinternal#Attributes",
+                    "traits": {
+                        "smithy.api#documentation": "<p>Attributes of a group.</p>"
+                    }
+                }
+            },
+            "traits": {
+                "smithy.api#documentation": "<p>A group object that contains the metadata and attributes for a specified group.</p>"
+            }
+        },
+        "com.amazonaws.identitystoreinternal#GroupDisplayName": {
+            "type": "string",
+            "traits": {
+                "smithy.api#length": {
+                    "min": 1,
+                    "max": 1024
+                },
+                "smithy.api#pattern": "^[\\p{L}\\p{M}\\p{S}\\p{N}\\p{P}\\t\\n\\r  ]+$",
+                "smithy.api#sensitive": {}
+            }
+        },
+        "com.amazonaws.identitystoreinternal#GroupResource": {
+            "type": "resource",
+            "identifiers": {
+                "GroupId": {
+                    "target": "com.amazonaws.identitystoreinternal#ResourceId"
+                }
+            },
+            "search": {
+                "target": "com.amazonaws.identitystoreinternal#SearchGroups"
+            },
+            "traits": {
+                "aws.cloudformation#cfnResource": {
+                    "name": "Group"
+                },
+                "smithy.api#documentation": "Resource Type definition for AWS:IdentityStore::Group"
+            }
+        },
+        "com.amazonaws.identitystoreinternal#Groups": {
+            "type": "list",
+            "member": {
+                "target": "com.amazonaws.identitystoreinternal#Group"
             }
         },
         "com.amazonaws.identitystoreinternal#IdentityStoreId": {
@@ -1443,6 +1548,40 @@
                 }
             }
         },
+        "com.amazonaws.identitystoreinternal#ObjectMeta": {
+            "type": "structure",
+            "members": {
+                "CreatedAt": {
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The time when the object was created.</p>",
+                        "smithy.api#timestampFormat": "epoch-seconds"
+                    }
+                },
+                "UpdatedAt": {
+                    "target": "smithy.api#Timestamp",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The time when the object was updated.</p>",
+                        "smithy.api#timestampFormat": "epoch-seconds"
+                    }
+                },
+                "CreatedBy": {
+                    "target": "com.amazonaws.identitystoreinternal#String",
+                    "traits": {
+                        "smithy.api#documentation": "<p>Entity that created the object.</p>"
+                    }
+                },
+                "UpdatedBy": {
+                    "target": "com.amazonaws.identitystoreinternal#String",
+                    "traits": {
+                        "smithy.api#documentation": "<p>Entity that updated the object.</p>"
+                    }
+                }
+            },
+            "traits": {
+                "smithy.api#documentation": "<p>Metadata information about an object.</p>"
+            }
+        },
         "com.amazonaws.identitystoreinternal#ProvisioningTenant": {
             "type": "structure",
             "members": {
@@ -1574,6 +1713,33 @@
                 "smithy.api#sensitive": {}
             }
         },
+        "com.amazonaws.identitystoreinternal#SearchGroups": {
+            "type": "operation",
+            "input": {
+                "target": "com.amazonaws.identitystoreinternal#SearchGroupsRequest"
+            },
+            "output": {
+                "target": "com.amazonaws.identitystoreinternal#SearchGroupsResponse"
+            },
+            "errors": [
+                {
+                    "target": "com.amazonaws.identitystoreinternal#ResourceNotFoundException"
+                },
+                {
+                    "target": "com.amazonaws.identitystoreinternal#ValidationException"
+                }
+            ],
+            "traits": {
+                "smithy.api#documentation": "<p>Search all groups in the identity store. Returns a paginated list of complete <code>Group</code> objects.</p>",
+                "smithy.api#paginated": {
+                    "inputToken": "NextToken",
+                    "items": "Groups",
+                    "outputToken": "NextToken",
+                    "pageSize": "MaxResults"
+                },
+                "smithy.api#readonly": {}
+            }
+        },
         "com.amazonaws.identitystoreinternal#SearchUsers": {
             "type": "operation",
             "input": {
@@ -1599,6 +1765,54 @@
                     "pageSize": "MaxResults"
                 },
                 "smithy.api#readonly": {}
+            }
+        },
+        "com.amazonaws.identitystoreinternal#SearchGroupsRequest": {
+            "type": "structure",
+            "members": {
+                "IdentityStoreId": {
+                    "target": "com.amazonaws.identitystoreinternal#IdentityStoreId",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The globally unique identifier for the identity store, such as\n         <code>d-1234567890</code>. In this example, <code>d-</code> is a fixed prefix, and\n            <code>1234567890</code> is a randomly generated string that contains numbers and lower\n         case letters. This value is generated at the time that a new identity store is\n         created.</p>",
+                        "smithy.api#required": {}
+                    }
+                },
+                "MaxResults": {
+                    "target": "com.amazonaws.identitystoreinternal#MaxResults",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The maximum number of results to be returned per request. This parameter is used in the\n            <code>SearchGroups</code> request to specify how many results\n         to return in one page. The length limit is 50 characters.</p>"
+                    }
+                },
+                "NextToken": {
+                    "target": "com.amazonaws.identitystoreinternal#NextToken",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The pagination token used for the <code>SearchGroups</code> API\n         operation. This value is generated by the identity store service. It is returned in the\n         API response if the total results are more than the size of one page. This token is also\n         returned when it is used in the API request to search for the next page.</p>"
+                    }
+                },
+                "Filters": {
+                    "target": "com.amazonaws.identitystoreinternal#Filters",
+                    "traits": {
+                        "smithy.api#documentation": "<p>A list of <code>Filter</code> objects, which is used in the <code>SearchGroups</code> request. </p>"
+                    }
+                }
+            }
+        },
+        "com.amazonaws.identitystoreinternal#SearchGroupsResponse": {
+            "type": "structure",
+            "members": {
+                "Groups": {
+                    "target": "com.amazonaws.identitystoreinternal#Groups",
+                    "traits": {
+                        "smithy.api#documentation": "<p>A list of <code>Group</code> objects in the identity store.</p>",
+                        "smithy.api#required": {}
+                    }
+                },
+                "NextToken": {
+                    "target": "com.amazonaws.identitystoreinternal#NextToken",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The pagination token used for the <code>SearchGroups</code> API\n         operation. This value is generated by the identity store service. It is returned in the\n         API response if the total results are more than the size of one page. This token is also\n         returned when it is used in the API request to search for the next page.</p>"
+                    }
+                }
             }
         },
         "com.amazonaws.identitystoreinternal#SearchUsersRequest": {
@@ -1724,13 +1938,13 @@
                     }
                 },
                 "Meta": {
-                    "target": "com.amazonaws.identitystoreinternal#UserInfo",
+                    "target": "com.amazonaws.identitystoreinternal#ObjectMeta",
                     "traits": {
                         "smithy.api#documentation": "<p>Metadata information for a user.</p>"
                     }
                 },
                 "UserAttributes": {
-                    "target": "com.amazonaws.identitystoreinternal#UserAttributes",
+                    "target": "com.amazonaws.identitystoreinternal#Attributes",
                     "traits": {
                         "smithy.api#documentation": "<p>Attributes of a user.</p>"
                     }
@@ -1738,72 +1952,6 @@
             },
             "traits": {
                 "smithy.api#documentation": "<p>A user object that contains the metadata and attributes for a specified user.</p>"
-            }
-        },
-        "com.amazonaws.identitystoreinternal#UserAttributes": {
-            "type": "map",
-            "key": {
-                "target": "com.amazonaws.identitystoreinternal#String"
-            },
-            "value": {
-                "target": "com.amazonaws.identitystoreinternal#UserAttributesValue"
-            }
-        },
-        "com.amazonaws.identitystoreinternal#UserAttributesComplexListValue": {
-            "type": "list",
-            "member": {
-                "target": "com.amazonaws.identitystoreinternal#UserAttributes"
-            }
-        },
-        "com.amazonaws.identitystoreinternal#UserAttributesValue": {
-            "type": "union",
-            "members": {
-                "StringValue": {
-                    "target": "com.amazonaws.identitystoreinternal#SensitiveStringType"
-                },
-                "BooleanValue": {
-                    "target": "com.amazonaws.identitystoreinternal#SensitiveBooleanType"
-                },
-                "ComplexValue": {
-                    "target": "com.amazonaws.identitystoreinternal#UserAttributes"
-                },
-                "ComplexListValue": {
-                    "target": "com.amazonaws.identitystoreinternal#UserAttributesComplexListValue"
-                }
-            }
-        },
-        "com.amazonaws.identitystoreinternal#UserInfo": {
-            "type": "structure",
-            "members": {
-                "CreatedAt": {
-                    "target": "smithy.api#Timestamp",
-                    "traits": {
-                        "smithy.api#documentation": "<p>The time when the user was created.</p>",
-                        "smithy.api#timestampFormat": "epoch-seconds"
-                    }
-                },
-                "UpdatedAt": {
-                    "target": "smithy.api#Timestamp",
-                    "traits": {
-                        "smithy.api#documentation": "<p>The time when the user was updated.</p>",
-                        "smithy.api#timestampFormat": "epoch-seconds"
-                    }
-                },
-                "CreatedBy": {
-                    "target": "com.amazonaws.identitystoreinternal#String",
-                    "traits": {
-                        "smithy.api#documentation": "<p>Entity that created the user.</p>"
-                    }
-                },
-                "UpdatedBy": {
-                    "target": "com.amazonaws.identitystoreinternal#String",
-                    "traits": {
-                        "smithy.api#documentation": "<p>Entity that updated the user.</p>"
-                    }
-                }
-            },
-            "traits": {
-                "smithy.api#documentation": "<p>Metadata information about a user.</p>"
             }
         },
         "com.amazonaws.identitystoreinternal#UserName": {
