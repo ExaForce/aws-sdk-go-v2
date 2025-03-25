@@ -12,12 +12,12 @@ jobs:
 
     steps:
       - name: Checkout target
-        uses: actions/checkout@v2
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           path: sdkbase
           ref: ${{ github.base_ref }}
       - name: Checkout this ref
-        uses: actions/checkout@v2
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           path: new-ref
           fetch-depth: 0
@@ -26,13 +26,13 @@ jobs:
       - name: Get Target Files
         run: git --git-dir ./sdkbase/.git ls-files | grep -xf refDiffFiles.txt - > targetFiles.txt
       - name: Checkout scancode
-        uses: actions/checkout@v2
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: nexB/scancode-toolkit
           path: scancode-toolkit
           fetch-depth: 1
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38
         with:
           python-version: ${{ matrix.python-version }}
       # ScanCode
