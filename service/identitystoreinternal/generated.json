@@ -8,6 +8,8 @@
     "files": [
         "api_client.go",
         "api_client_test.go",
+        "api_op_DisableUser.go",
+        "api_op_EnableUser.go",
         "api_op_ListBearerTokens.go",
         "api_op_ListProvisioningTenants.go",
         "api_op_SearchGroups.go",

@@ -16,6 +16,12 @@
                 },
                 {
                     "target": "com.amazonaws.identitystoreinternal#ListBearerTokens"
+                },
+                {
+                    "target": "com.amazonaws.identitystoreinternal#DisableUser"
+                },
+                {
+                    "target": "com.amazonaws.identitystoreinternal#EnableUser"
                 }
             ],
             "resources": [
@@ -1308,6 +1314,92 @@
                 "target": "com.amazonaws.identitystoreinternal#BearerToken"
             }
         },
+        "com.amazonaws.identitystoreinternal#DisableUser": {
+            "type": "operation",
+            "input": {
+                "target": "com.amazonaws.identitystoreinternal#DisableUserRequest"
+            },
+            "output": {
+                "target": "com.amazonaws.identitystoreinternal#DisableUserResponse"
+            },
+            "errors": [
+                {
+                    "target": "com.amazonaws.identitystoreinternal#ResourceNotFoundException"
+                },
+                {
+                    "target": "com.amazonaws.identitystoreinternal#ValidationException"
+                }
+            ],
+            "traits": {
+                "smithy.api#documentation": "<p>Disables a user in the identity store.</p>"
+            }
+        },
+        "com.amazonaws.identitystoreinternal#DisableUserRequest": {
+            "type": "structure",
+            "members": {
+                "IdentityStoreId": {
+                    "target": "com.amazonaws.identitystoreinternal#IdentityStoreId",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The globally unique identifier for the identity store, such as <code>d-1234567890</code>. In this example, <code>d-</code> is a fixed prefix, and <code>1234567890</code> is a randomly generated string that contains numbers and lower case letters. This value is generated at the time that a new identity store is created.</p>",
+                        "smithy.api#required": {}
+                    }
+                },
+                "UserId": {
+                    "target": "com.amazonaws.identitystoreinternal#ResourceId",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The identifier for a user in the identity store.</p>",
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "com.amazonaws.identitystoreinternal#DisableUserResponse": {
+            "type": "structure",
+            "members": {}
+        },
+        "com.amazonaws.identitystoreinternal#EnableUser": {
+            "type": "operation",
+            "input": {
+                "target": "com.amazonaws.identitystoreinternal#EnableUserRequest"
+            },
+            "output": {
+                "target": "com.amazonaws.identitystoreinternal#EnableUserResponse"
+            },
+            "errors": [
+                {
+                    "target": "com.amazonaws.identitystoreinternal#ResourceNotFoundException"
+                },
+                {
+                    "target": "com.amazonaws.identitystoreinternal#ValidationException"
+                }
+            ],
+            "traits": {
+                "smithy.api#documentation": "<p>Enables a user in the identity store.</p>"
+            }
+        },
+        "com.amazonaws.identitystoreinternal#EnableUserRequest": {
+            "type": "structure",
+            "members": {
+                "IdentityStoreId": {
+                    "target": "com.amazonaws.identitystoreinternal#IdentityStoreId",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The globally unique identifier for the identity store, such as <code>d-1234567890</code>. In this example, <code>d-</code> is a fixed prefix, and <code>1234567890</code> is a randomly generated string that contains numbers and lower case letters. This value is generated at the time that a new identity store is created.</p>",
+                        "smithy.api#required": {}
+                    }
+                },
+                "UserId": {
+                    "target": "com.amazonaws.identitystoreinternal#ResourceId",
+                    "traits": {
+                        "smithy.api#documentation": "<p>The identifier for a user in the identity store.</p>",
+                        "smithy.api#required": {}
+                    }
+                }
+            }
+        },
+        "com.amazonaws.identitystoreinternal#EnableUserResponse": {
+            "type": "structure",
+            "members": {}
+        },
         "com.amazonaws.identitystoreinternal#ExceptionMessage": {
             "type": "string"
         },
@@ -1385,7 +1477,7 @@
                     "min": 1,
                     "max": 1024
                 },
-                "smithy.api#pattern": "^[\\p{L}\\p{M}\\p{S}\\p{N}\\p{P}\\t\\n\\r  ]+$",
+                "smithy.api#pattern": "^[\\p{L}\\p{M}\\p{S}\\p{N}\\p{P}\\t\\n\\r ?]+$",
                 "smithy.api#sensitive": {}
             }
         },
@@ -1877,7 +1969,7 @@
                     "min": 1,
                     "max": 1024
                 },
-                "smithy.api#pattern": "^[\\p{L}\\p{M}\\p{S}\\p{N}\\p{P}\\t\\n\\r  　]+$",
+                "smithy.api#pattern": "^[\\p{L}\\p{M}\\p{S}\\p{N}\\p{P}\\t\\n\\r ??]+$",
                 "smithy.api#sensitive": {}
             }
         },

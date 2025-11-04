@@ -62,6 +62,30 @@ func testSnapshot(stack *middleware.Stack, operation string) error {
 	}
 	return snapshotOK{}
 }
+func TestCheckSnapshot_DisableUser(t *testing.T) {
+	svc := New(Options{})
+	_, err := svc.DisableUser(context.Background(), nil, func(o *Options) {
+		o.APIOptions = append(o.APIOptions, func(stack *middleware.Stack) error {
+			return testSnapshot(stack, "DisableUser")
+		})
+	})
+	if _, ok := err.(snapshotOK); !ok && err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestCheckSnapshot_EnableUser(t *testing.T) {
+	svc := New(Options{})
+	_, err := svc.EnableUser(context.Background(), nil, func(o *Options) {
+		o.APIOptions = append(o.APIOptions, func(stack *middleware.Stack) error {
+			return testSnapshot(stack, "EnableUser")
+		})
+	})
+	if _, ok := err.(snapshotOK); !ok && err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestCheckSnapshot_ListBearerTokens(t *testing.T) {
 	svc := New(Options{})
 	_, err := svc.ListBearerTokens(context.Background(), nil, func(o *Options) {
@@ -109,6 +133,30 @@ func TestCheckSnapshot_SearchUsers(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+func TestUpdateSnapshot_DisableUser(t *testing.T) {
+	svc := New(Options{})
+	_, err := svc.DisableUser(context.Background(), nil, func(o *Options) {
+		o.APIOptions = append(o.APIOptions, func(stack *middleware.Stack) error {
+			return updateSnapshot(stack, "DisableUser")
+		})
+	})
+	if _, ok := err.(snapshotOK); !ok && err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestUpdateSnapshot_EnableUser(t *testing.T) {
+	svc := New(Options{})
+	_, err := svc.EnableUser(context.Background(), nil, func(o *Options) {
+		o.APIOptions = append(o.APIOptions, func(stack *middleware.Stack) error {
+			return updateSnapshot(stack, "EnableUser")
+		})
+	})
+	if _, ok := err.(snapshotOK); !ok && err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestUpdateSnapshot_ListBearerTokens(t *testing.T) {
 	svc := New(Options{})
 	_, err := svc.ListBearerTokens(context.Background(), nil, func(o *Options) {
